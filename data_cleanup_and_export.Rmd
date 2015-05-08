@@ -282,9 +282,11 @@ fluoride <- as.data.frame(sapply(fluoride, toupper), stringsAsFactors=FALSE)
 Fix the merged cell found in last row, from an error in original XLSX worksheet.
 
 ```{r}
-fluoride[418, 3] <- 'YAK CO - RAPTOR LANE WATER'
-fluoride[418, 5] <- '0.6'
-fluoride[418, 6] <- '0'
+if (fluoride[418, 5] == "0.6           0") {
+    fluoride[418, 3] <- 'YAK CO - RAPTOR LANE WATER'
+    fluoride[418, 5] <- '0.6'
+    fluoride[418, 6] <- '0'
+}
 ```
 
 ### Convert Numeric Columns
