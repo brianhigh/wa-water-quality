@@ -58,22 +58,15 @@ urlbase='http://www.doh.wa.gov/portals/1/documents/4200/'
 for (type in c('general','source')) {
     for (grp in c('a', 'b')) {
         datafile <- paste(c(grp, type, '.txt'), sep='', collapse='')
-        outdatafile <- paste(c(datadir, '/', grp, type, '.txt'), 
+        datafileout <- paste(c(datadir, '/', grp, type, '.txt'), 
                              sep='', collapse='')
         dataurl <- paste(c(urlbase, datafile), sep='', collapse='')
-        if (! file.exists(datafile)) {
+        if (! file.exists(datafileout)) {
             print("Downloading data file...")
-            download.file(dataurl, outdatafile)
+            download.file(dataurl, datafileout)
         }
     }
 }
-```
-
-```
-## [1] "Downloading data file..."
-## [1] "Downloading data file..."
-## [1] "Downloading data file..."
-## [1] "Downloading data file..."
 ```
 
 ### Import Data
@@ -259,14 +252,10 @@ datafile <- 'fluoride-data.xlsx'
 datafileout <- paste(c(datadir, '/', datafile), sep='', collapse='')
 dataurl <- paste(c(urlbase, datafile),sep='', collapse='')
 
-if (! file.exists(datafile)) {
+if (! file.exists(datafileout)) {
     print("Downloading data file...")
     download.file(dataurl, datafileout)
 }
-```
-
-```
-## [1] "Downloading data file..."
 ```
 
 ### Import Worksheet
