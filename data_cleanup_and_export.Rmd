@@ -7,7 +7,7 @@ output:
         keep_md: yes
 ---
 
-Get drinking water data from WA DOH, clean, and convert to CSV format.
+Get drinking water data from WA DOH, clean, and convert to CSV and TSV formats.
 
 ## Setup
 
@@ -216,10 +216,15 @@ ex_tsv(sources, paste(c(datadir, '/', filename_prefix, 'sources.tsv'),
 
 ## Cleanup Fluoride Data
 
-Get the fluoride data (XLSX) from WA DOH [Fluoride in Drinking Water](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater) page (Excel, 06/13).
+This is handled separately from the "systems" and "sources" since the the data 
+file format is completely different.
+
+### Download Fluoride Data
+
+Get the "Lists of Water Systems with fluoride (Excel, 06/13)" XLSX file from 
+WA DOH [Fluoride in Drinking Water](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater) page.
 
 ```{r}
-# Link title: Lists of Water Systems with fluoride (Excel, 06/13)
 datafile <- 'fluoride-data.xlsx'
 datafileout <- paste(c(datadir, '/', datafile), sep='', collapse='')
 dataurl <- paste(c(urlbase, datafile),sep='', collapse='')
