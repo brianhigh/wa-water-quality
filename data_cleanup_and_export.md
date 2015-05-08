@@ -82,11 +82,11 @@ UTF-8.
 
 
 ```r
-systems = as.data.frame(sapply(systems, 
+systems <- as.data.frame(sapply(systems, 
                                function(x) iconv(x, "latin1", "UTF-8")), 
                         stringsAsFactors=FALSE)
 
-sources = as.data.frame(sapply(sources, 
+sources <- as.data.frame(sapply(sources, 
                                function(x) iconv(x, "latin1", "UTF-8")), 
                         stringsAsFactors=FALSE)
 ```
@@ -97,7 +97,7 @@ Convert character values to upper-case.
 
 
 ```r
-systems = as.data.frame(sapply(systems, toupper), stringsAsFactors=FALSE)
+systems <- as.data.frame(sapply(systems, toupper), stringsAsFactors=FALSE)
 sources <- as.data.frame(sapply(sources, toupper), stringsAsFactors=FALSE)
 ```
 
@@ -266,7 +266,7 @@ character set. The UTF-8 character set is the default for import into phpMyAdmin
 
 
 ```r
-fluoride = as.data.frame(sapply(fluoride, 
+fluoride <- as.data.frame(sapply(fluoride, 
                                function(x) iconv(x, "latin1", "UTF-8")), 
                         stringsAsFactors=FALSE)
 ```
