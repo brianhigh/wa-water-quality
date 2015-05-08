@@ -18,7 +18,7 @@ pkgs <- c("knitr", "XLConnect")
 for (pkg in pkgs) {
     if (! require(pkg, character.only=T)) { 
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        suppressPackageStartupMessages(library(XLConnect))
+        suppressPackageStartupMessages(library(pkg))
     }
 }
 ```
