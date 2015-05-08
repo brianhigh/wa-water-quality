@@ -14,9 +14,8 @@ convert to CSV and TSV formats for import into a database.
 
 Load the required packages.
 
-```{r}
-pkgs <- c("knitr", "XLConnect")
-for (pkg in pkgs) {
+```{r, echo=TRUE, message=FALSE}
+for (pkg in c("knitr", "XLConnect")) {
     if (! require(pkg, character.only=T)) { 
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         suppressPackageStartupMessages(library(pkg))

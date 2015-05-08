@@ -11,26 +11,12 @@ Load the required packages.
 
 
 ```r
-pkgs <- c("knitr", "XLConnect")
-for (pkg in pkgs) {
+for (pkg in c("knitr", "XLConnect")) {
     if (! require(pkg, character.only=T)) { 
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         suppressPackageStartupMessages(library(pkg))
     }
 }
-```
-
-```
-## Loading required package: knitr
-## Loading required package: XLConnect
-## Loading required package: XLConnectJars
-## XLConnect 0.2-11 by Mirai Solutions GmbH [aut],
-##   Martin Studer [cre],
-##   The Apache Software Foundation [ctb, cph] (Apache POI, Apache Commons
-##     Codec),
-##   Stephen Colebourne [ctb, cph] (Joda-Time Java library)
-## http://www.mirai-solutions.com ,
-## http://miraisolutions.wordpress.com
 ```
 
 Configure `knitr` options.
