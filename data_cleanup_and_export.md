@@ -2,7 +2,8 @@
 Brian High  
 05/08/2015  
 
-Get drinking water data from WA DOH, clean, and convert to CSV and TSV formats.
+Get drinking water data from [WA DOH](http://www.doh.wa.gov), clean, and 
+convert to CSV and TSV formats for import into a database.
 
 ## Setup
 
@@ -260,7 +261,7 @@ if (! file.exists(datafileout)) {
 
 ### Import Worksheet
 
-We need to get sheet number four, excluding the first few rows.
+We need to get sheet number four, excluding the first and last few rows.
 
 
 ```r
