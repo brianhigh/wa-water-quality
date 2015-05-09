@@ -77,8 +77,12 @@ sources <- rbind(sourcea, sourceb)
 
 ### Convert Character Encoding
 
-Use `sapply` and `iconv` to convert character encoding encoding from latin1 to 
+Use `sapply` and `iconv` to convert character encoding from latin1 to 
 UTF-8.
+
+We "normalize" on a common character set (UTF-8). This makes the resulting 
+output files larger since more bytes will be used per character. The UTF-8 
+character set is the default for import into phpMyAdmin.
 
 
 ```r
@@ -178,7 +182,8 @@ sources$SRC_InactiveDate <- as.Date(sources$SRC_InactiveDate, "%m/%d/%Y")
 
 These helper functions will allow for cleaner, reusable export code. They create 
 a CSV for import into phpMyAdmin and a TSV for import into SQLShare. The CSV is 
-zipped to work around a file size limit with phpMyAdmin.
+zipped to work around a file size limit with phpMyAdmin. phpMyAdmin takes a 
+zipped CSV as an allowed file format with no extra effort on our part.
 
 
 ```r
@@ -259,10 +264,8 @@ fluoride <- readWorksheetFromFile(datafileout, sheet=4, header=FALSE,
 
 ### Apply Character Encoding
 
-Use `sapply` and `iconv` to convert character encoding encoding from latin1 to 
-UTF-8. This will make the resulting output files larger since more bytes will 
-be used per character. The benefit is that we "normalizing" on a common 
-character set. The UTF-8 character set is the default for import into phpMyAdmin.
+Use `sapply` and `iconv` to convert character encoding from latin1 to 
+UTF-8. 
 
 
 ```r
