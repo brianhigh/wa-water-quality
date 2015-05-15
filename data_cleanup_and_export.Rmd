@@ -18,7 +18,7 @@ Load the required packages.
 for (pkg in c("knitr", "XLConnect")) {
     if (! require(pkg, character.only=T)) { 
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        suppressPackageStartupMessages(library(pkg))
+        suppressPackageStartupMessages(library(pkg, character.only=T))
     }
 }
 ```
@@ -180,6 +180,8 @@ zipped CSV as an allowed file format with no extra effort on our part.
 
 ```{r}
 # Function: Export to CSV and ZIP for phpMyAdmin (MySQL) import
+# NOTE: *** Windows users will need RTools installed first. ***
+#       See: http://cran.r-project.org/bin/windows/Rtools/index.html
 ex_csv_zip <- function(df, filename) {        
     # Write data to CSV, using \ to escape " (not per RFC 4180!) using 
     # qmethod="escape" so that phpMyAdmin can import the CSV correctly.
@@ -236,7 +238,7 @@ dataurl <- paste(c(urlbase, datafile),sep='', collapse='')
 
 if (! file.exists(datafileout)) {
     print("Downloading data file...")
-    download.file(dataurl, datafileout)
+    download.file(dataurl, datafileout, mode="wb")
 }
 ```
 
