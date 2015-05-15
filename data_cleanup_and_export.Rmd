@@ -15,11 +15,12 @@ convert to CSV and TSV formats for import into a database.
 Load the required packages.
 
 ```{r, echo=TRUE, message=FALSE}
+# Load required packages. Install packages when necessary.
 for (pkg in c("knitr", "XLConnect")) {
-    if (! require(pkg, character.only=TRUE)) { 
-        install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        suppressPackageStartupMessages(library(pkg, character.only=TRUE))
-    }
+  if (! suppressWarnings(require(pkg, character.only=TRUE))) {
+    install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
+    suppressWarnings(require(pkg, character.only=TRUE))
+  }
 }
 ```
 
