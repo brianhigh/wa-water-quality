@@ -12,9 +12,9 @@ Load the required packages.
 
 ```r
 for (pkg in c("knitr", "XLConnect")) {
-    if (! require(pkg, character.only=T)) { 
+    if (! require(pkg, character.only=TRUE)) { 
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        suppressPackageStartupMessages(library(pkg, character.only=T))
+        suppressPackageStartupMessages(library(pkg, character.only=TRUE))
     }
 }
 ```
