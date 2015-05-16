@@ -294,7 +294,7 @@ column names manually.
 
 
 ```r
-colnames(fluoride) <- c("County", "PwsID", "Pws_SystemName", "CllctDate", 
+colnames(fluoride) <- c("County", "PWSID", "SystemName", "CllctDate", 
                         "mgL", "ResPop")
 ```
 
