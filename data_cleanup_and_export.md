@@ -7,15 +7,25 @@ convert to CSV and TSV formats for import into a database.
 
 ## Setup
 
-Load the required packages.
+Java is required for package "XLConnect". Make sure Java is installed.
 
 
 ```r
-# Load required packages. Install packages when necessary.
-for (pkg in c("knitr", "XLConnect")) {
-    if (! suppressWarnings(require(pkg, character.only=TRUE))) {
+if (system2("java","-version")) {
+    stop("Java not found. Install Java first. https://java.com/en/download/")
+}
+```
+
+Load the required R packages.
+
+
+```r
+for (pkg in c("knitr", "rJava", "XLConnect")) {
+    if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        suppressWarnings(require(pkg, character.only=TRUE))
+        if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
+            stop(paste0(c("Can't load package: ", pkg, "!"), collapse = ""))
+        }
     }
 }
 ```
