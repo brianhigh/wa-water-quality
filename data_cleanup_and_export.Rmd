@@ -1,7 +1,7 @@
 ---
 title: "Water Quality Data Cleanup"
 author: "Brian High"
-date: "05/08/2015"
+date: "05/17/2015"
 output: 
     html_document:
         keep_md: yes
@@ -23,7 +23,7 @@ if (system2("java","-version")) {
 Load the required R packages.
 
 ```{r, echo=TRUE, message=FALSE}
-for (pkg in c("knitr", "rJava", "XLConnect")) {
+for (pkg in c("knitr", "rJava", "XLConnect", "dplyr", "ggmap")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -73,8 +73,13 @@ Import the data from text files into `data.frame`s.
 
 ```{r}
 tsv_import <- function(filename) {
-    read.delim(paste(c(datadir, '/', filename), sep='', collapse=''), 
-    stringsAsFactors=FALSE, header=TRUE)
+    infile <- paste(c(datadir, '/', filename), sep='', collapse='')
+    if (file.exists(infile)) {
+        read.delim(infile, stringsAsFactors=FALSE, header=TRUE)
+    }
+    else {
+        stop(paste("Can't find", filename, "in folder", datadir, "!", sep=" "))
+    }
 }
 
 systema <- tsv_import('ageneral.txt')
@@ -126,19 +131,114 @@ systems$WSZipCode <- sapply(systems$WSZipCode,
 
 Fix inconsistencies in PWSCity column.
 
+```
+by_city <- filter(systems, WSState=="WA") %>% group_by(PWSCity)
+cities_count <- summarize(by_city, count = n())
+View(cities_count)
+```
+
 ```{r}
-systems$PWSCity[systems$PWSCity == "GREEN WATER"]  <- "GREENWATER"
-systems$PWSCity[systems$PWSCity == "GOLDBAR"]      <- "GOLD BAR"
-systems$PWSCity[systems$PWSCity == "SILVERLAKE"]   <- "SILVER LAKE"
-systems$PWSCity[systems$PWSCity == "HOODS PORT"]   <- "HOODSPORT"
-systems$PWSCity[systems$PWSCity == "BATTLEGROUND"] <- "BATTLE GROUND"
-systems$PWSCity[systems$PWSCity == "EAST SOUND"]   <- "EASTSOUND"
-systems$PWSCity[systems$PWSCity == "NORTHBEND"]    <- "NORTH BEND"
-systems$PWSCity[systems$PWSCity == "NEWCASTLE"]    <- "NEW CASTLE"
-systems$PWSCity[systems$PWSCity == "LITTLEROCK"]   <- "LITTLE ROCK"
-systems$PWSCity[systems$PWSCity == "LACENTER"]     <- "LA CENTER"
-systems$PWSCity[systems$PWSCity == "SEATTTLE"]     <- "SEATTLE"
-systems$PWSCity[systems$PWSCity == "LACONNER"]     <- "LA CONNER"
+systems$PWSCity[systems$PWSCity == "AMROY"]               <- "AMBOY"
+systems$PWSCity[systems$PWSCity == "ANANCORTES"]          <- "ANACORTES"
+systems$PWSCity[systems$PWSCity == "BAINBRIDGE"]          <- "BAINBRIDGE ISLAND"
+systems$PWSCity[systems$PWSCity == "BAINBRIDGE IS."]      <- "BAINBRIDGE ISLAND"
+systems$PWSCity[systems$PWSCity == "BAINBRIDGE IS"]       <- "BAINBRIDGE ISLAND"
+systems$PWSCity[systems$PWSCity == "BAINBRIDGE_ISLAND"]   <- "BAINBRIDGE ISLAND"
+systems$PWSCity[systems$PWSCity == "BATTLE GOUND"]        <- "BATTLE GROUND"
+systems$PWSCity[systems$PWSCity == "BATTLEGROUND"]        <- "BATTLE GROUND"
+systems$PWSCity[systems$PWSCity == "BATTLE GROUNG"]       <- "BATTLE GROUND"
+systems$PWSCity[systems$PWSCity == "BELFARE"]             <- "BELFAIR"
+systems$PWSCity[systems$PWSCity == "BELILNGHAM"]          <- "BELLINGHAM"
+systems$PWSCity[systems$PWSCity == "BENTON"]              <- "BENTON CITY"
+systems$PWSCity[systems$PWSCity == "BERING"]              <- "BARING"
+systems$PWSCity[systems$PWSCity == "BLAIN"]               <- "BLAINE"
+systems$PWSCity[systems$PWSCity == "BLAKELY"]             <- "BLAKELY ISLAND"
+systems$PWSCity[systems$PWSCity == "BOART"]               <- "HOBART"
+systems$PWSCity[systems$PWSCity == "BONNEYLAKE"]          <- "BONNEY LAKE"
+systems$PWSCity[systems$PWSCity == "BOTHEL"]              <- "BOTHELL"
+systems$PWSCity[systems$PWSCity == "BOX"]                 <- "BOW"
+systems$PWSCity[systems$PWSCity == "BRUSH PARIRIE"]       <- "BRUSH PRAIRIE"
+systems$PWSCity[systems$PWSCity == "BUCKLY"]              <- "BUCKLEY"
+systems$PWSCity[systems$PWSCity == "CASTLEROCK"]          <- "CASTLE ROCK"
+systems$PWSCity[systems$PWSCity == "CLEARWATER-FORKS"]    <- "FORKS"
+systems$PWSCity[systems$PWSCity == "CONCULLY"]            <- "CONCONULLY"
+systems$PWSCity[systems$PWSCity == "CORNATION"]           <- "CARNATION"
+systems$PWSCity[systems$PWSCity == "COUPEVILE"]           <- "COUPEVILLE"
+systems$PWSCity[systems$PWSCity == "CRESTON"]             <- "PRESTON"
+systems$PWSCity[systems$PWSCity == "DESERTAIRE"]          <- "DESERT AIRE"
+systems$PWSCity[systems$PWSCity == "DESMOINES"]           <- "DES MOINES"
+systems$PWSCity[systems$PWSCity == "EASTONVILLE"]         <- "EATONVILLE"
+systems$PWSCity[systems$PWSCity == "EAST SOUND"]          <- "EASTSOUND"
+systems$PWSCity[systems$PWSCity == "EAST WENTACHEE"]      <- "EAST WENATCHEE"
+systems$PWSCity[systems$PWSCity == "EATNOVILLE"]          <- "EATONVILLE"
+systems$PWSCity[systems$PWSCity == "E WENATCHEE"]         <- "EAST WENATCHEE"
+systems$PWSCity[systems$PWSCity == "GOLDBAR"]             <- "GOLD BAR"
+systems$PWSCity[systems$PWSCity == "GOLENDALE"]           <- "GOLDENDALE"
+systems$PWSCity[systems$PWSCity == "GRANDVIEW RD"]        <- "GRANDVIEW"
+systems$PWSCity[systems$PWSCity == "GRANVIEW"]            <- "GRANDVIEW"
+systems$PWSCity[systems$PWSCity == "GREEN WATER"]         <- "GREENWATER"
+systems$PWSCity[systems$PWSCity == "HARRA"]               <- "HARRAH"
+systems$PWSCity[systems$PWSCity == "HOODS PORT"]          <- "HOODSPORT"
+systems$PWSCity[systems$PWSCity == "ILLWACO"]             <- "ILWACO"
+systems$PWSCity[systems$PWSCity == "ISSAGUAH"]            <- "ISSAQUAH"
+systems$PWSCity[systems$PWSCity == "ISSQUAH"]             <- "ISSAQUAH"
+systems$PWSCity[systems$PWSCity == "JOINT BASE LEWIS MCCHORD"] <- "JOINT BASE LEWIS-MCCHORD"
+systems$PWSCity[systems$PWSCity == "KENNEWEICK"]          <- "KENNEWICK"
+systems$PWSCity[systems$PWSCity == "KENNWICK"]            <- "KENNEWICK"
+systems$PWSCity[systems$PWSCity == "LACENTER"]            <- "LA CENTER"
+systems$PWSCity[systems$PWSCity == "LACONNER"]            <- "LA CONNER"
+systems$PWSCity[systems$PWSCity == "LILLIWAP"]            <- "LILLIWAUP"
+systems$PWSCity[systems$PWSCity == "LITTLEROCK"]          <- "LITTLE ROCK"
+systems$PWSCity[systems$PWSCity == "LONGBEACH"]           <- "LONG BEACH"
+systems$PWSCity[systems$PWSCity == "LYNDED"]              <- "LYNDEN"
+systems$PWSCity[systems$PWSCity == "MALLOT"]              <- "MALOTT"
+systems$PWSCity[systems$PWSCity == "MALO"]                <- "MALOTT"
+systems$PWSCity[systems$PWSCity == "MANSON, WA"]          <- "MANSON"
+systems$PWSCity[systems$PWSCity == "MAPLE VAQLLEY"]       <- "MAPLE VALLEY"
+systems$PWSCity[systems$PWSCity == "MAPLLE VALLEY"]       <- "MAPLE VALLEY"
+systems$PWSCity[systems$PWSCity == "MC KENNA"]            <- "MCKENNA"
+systems$PWSCity[systems$PWSCity == "MEDICAL LK"]          <- "MEDICAL LAKE"
+systems$PWSCity[systems$PWSCity == "METALINE"]            <- "METALINE FALLS"
+systems$PWSCity[systems$PWSCity == "MOSSYROCK"]           <- "MOSSYROCK"
+systems$PWSCity[systems$PWSCity == "MOUNT LAKE TERRACE"]  <- "MOUNTLAKE TERRACE"
+systems$PWSCity[systems$PWSCity == "MOXEE CITY"]          <- "MOXEE"
+systems$PWSCity[systems$PWSCity == "MUKITEO"]             <- "MUKILTEO"
+systems$PWSCity[systems$PWSCity == "NEWCASTLE"]           <- "NEW CASTLE"
+systems$PWSCity[systems$PWSCity == "NORTHBEND"]           <- "NORTH BEND"
+systems$PWSCity[systems$PWSCity == "OCEANPARK"]           <- "OCEAN PARK"
+systems$PWSCity[systems$PWSCity == "PARCELLS RD NE"]      <- "KINGSTON"
+systems$PWSCity[systems$PWSCity == "PAULSBO"]             <- "POULSBO"
+systems$PWSCity[systems$PWSCity == "POINT ROBERT"]        <- "POINT ROBERTS"
+systems$PWSCity[systems$PWSCity == "POULBSO"]             <- "POULSBO"
+systems$PWSCity[systems$PWSCity == "PROSSER RD"]          <- "PROSSER"
+systems$PWSCity[systems$PWSCity == "PT ANGELES"]          <- "PORT ANGELES"
+systems$PWSCity[systems$PWSCity == "PT ORCHARD"]          <- "PORT ORCHARD"
+systems$PWSCity[systems$PWSCity == "QULICENE"]            <- "QUILCENE"
+systems$PWSCity[systems$PWSCity == "RANDAL"]              <- "RANDLE"
+systems$PWSCity[systems$PWSCity == "RAVENSADALE"]         <- "RAVENSDALE"
+systems$PWSCity[systems$PWSCity == "REARDON"]             <- "REARDAN"
+systems$PWSCity[systems$PWSCity == "REDMOND WA 98052"]    <- "REDMOND"
+systems$PWSCity[systems$PWSCity == "REMOND"]              <- "REDMOND"
+systems$PWSCity[systems$PWSCity == "REVENSDALE"]          <- "RAVENSDALE"
+systems$PWSCity[systems$PWSCity == "RIDFEFIELD"]          <- "RIDGEFIELD"
+systems$PWSCity[systems$PWSCity == "RIDGEFFIELD"]         <- "RIDGEFIELD"
+systems$PWSCity[systems$PWSCity == "SEATTTLE"]            <- "SEATTLE"
+systems$PWSCity[systems$PWSCity == "SEDOR WOOLLEY"]       <- "SEDRO WOOLLEY"
+systems$PWSCity[systems$PWSCity == "SEDRO WOOLEY"]        <- "SEDRO WOOLLEY"
+systems$PWSCity[systems$PWSCity == "SEQUIM BAY"]          <- "SEQUIM"
+systems$PWSCity[systems$PWSCity == "SILVERCREEK"]         <- "SILVER CREEK"
+systems$PWSCity[systems$PWSCity == "SILVERLAKE"]          <- "SILVER LAKE"
+systems$PWSCity[systems$PWSCity == "SMMAMISH"]            <- "SAMMAMISH"
+systems$PWSCity[systems$PWSCity == "SNQUAMISH"]           <- "SUQUAMISH"
+systems$PWSCity[systems$PWSCity == "SOAP LK"]             <- "SOAP LAKE"
+systems$PWSCity[systems$PWSCity == "S[PLAME"]             <- "SPOKANE"
+systems$PWSCity[systems$PWSCity == "STELACOOM"]           <- "STEILACOOM"
+systems$PWSCity[systems$PWSCity == "TROUTLAKE"]           <- "TROUT LAKE"
+systems$PWSCity[systems$PWSCity == "VASHION ISLAND"]      <- "VASHON ISLAND"
+systems$PWSCity[systems$PWSCity == "WEANTCHEE"]           <- "WENATCHEE"
+systems$PWSCity[systems$PWSCity == "WENATHCHEE"]          <- "WENATCHEE"
+systems$PWSCity[systems$PWSCity == "W RICHLAND"]          <- "WEST RICHLAND"
+systems$PWSCity[systems$PWSCity == "W. RICHLAND"]         <- "WEST RICHLAND"
 ```
 
 ### Remove Thousands Separator
@@ -254,13 +354,51 @@ if (! file.exists(datafileout)) {
 
 ### Import Worksheet
 
-We need to get sheet number four, excluding the first and last few rows.
+We need to get each sheet individually, excluding the first and last few rows. 
+Since we import the worksheets ignoring the header, we will need to specify the 
+column names manually. We name them consistently so that all sheet have the 
+same column names, filling empty columns with NA. Then we combine all rows into
+a single table, including a new column indicating the treatment type.
 
 ```{r}
 # Import worksheet
-library(XLConnect)
-fluoride <- readWorksheetFromFile(datafileout, sheet=4, header=FALSE,
-                                  startRow=3, endRow=420)
+if (file.exists(datafileout)) {
+    # Treated: systems which adjust fluoride in water for dental benefits
+    fluoride.trt <- readWorksheetFromFile(datafileout, sheet=1, header=FALSE,
+                                          startRow=2, endRow=51)
+    colnames(fluoride.trt) <- c("County", "PWSID", "SystemName", "Group", "ResPop")
+    fluoride.trt <- mutate(fluoride.trt, County, PWSID, SystemName, CllctDate=NA, 
+                        mgL=NA, ResPop, Group, Treatment="treated")
+
+    # Intertied: systems which receive fluoridated only, but do not adjust
+    fluoride.tie <- readWorksheetFromFile(datafileout, sheet=2, header=FALSE,
+                                          startRow=2, endRow=116)
+    colnames(fluoride.tie) <- c("County", "PWSID", "SystemName", "Group", "ResPop")
+    fluoride.tie <- mutate(fluoride.tie, County, PWSID, SystemName, CllctDate=NA, 
+                        mgL=NA, ResPop, Group, Treatment="intertied")
+
+    # Mixed: unadjusted systems reeceiving fluoridated and unfluoridated water
+    fluoride.mix <- readWorksheetFromFile(datafileout, sheet=3, header=FALSE,
+                                          startRow=3, endRow=25)
+    colnames(fluoride.mix) <- c("PWSID", "SystemName", "ResPop")
+    fluoride.mix <- mutate(fluoride.mix, County=NA, PWSID, SystemName, CllctDate=NA, 
+                        mgL=NA, ResPop, Group=NA, Treatment="mixed")
+
+    # Natural: unadjusted natural systems with fluoride levels >= 0.6 mg/L
+    fluoride.nat <- readWorksheetFromFile(datafileout, sheet=4, header=FALSE,
+                                          startRow=3, endRow=420)
+    # Fix merged cell in last row, correcting an error in original worksheet
+    if (fluoride.nat[418, 5] == "0.6           0") {
+        fluoride.nat[418, 3] <- 'YAK CO - RAPTOR LANE WATER'
+        fluoride.nat[418, 5] <- '0.6'
+        fluoride.nat[418, 6] <- '0'
+    }
+    colnames(fluoride.nat) <- c("County", "PWSID", "SystemName", "CllctDate", 
+                        "mgL", "ResPop")
+    fluoride.nat <- mutate(fluoride.nat, County, PWSID, SystemName, CllctDate, 
+                        mgL, ResPop, Group=NA, Treatment="natural")
+    fluoride <- as.data.frame(rbind(fluoride.trt, fluoride.tie, fluoride.mix, fluoride.nat))
+}
 ```
 
 ### Apply Character Encoding
@@ -274,34 +412,12 @@ fluoride <- as.data.frame(sapply(fluoride,
                         stringsAsFactors=FALSE)
 ```
 
-### Specify Column Names
-
-Since we imported the worksheet ignoring the header, we will need to specify the 
-column names manually.
-
-```{r}
-colnames(fluoride) <- c("County", "PWSID", "SystemName", "CllctDate", 
-                        "mgL", "ResPop")
-```
-
 ### Convert to Upper-Case
 
 Convert character values to upper-case.
 
 ```{r}
 fluoride <- as.data.frame(sapply(fluoride, toupper), stringsAsFactors=FALSE)
-```
-
-### Fix Merged Cell
-
-Fix the merged cell found in last row, from an error in original XLSX worksheet.
-
-```{r}
-if (fluoride[418, 5] == "0.6           0") {
-    fluoride[418, 3] <- 'YAK CO - RAPTOR LANE WATER'
-    fluoride[418, 5] <- '0.6'
-    fluoride[418, 6] <- '0'
-}
 ```
 
 ### Convert Numeric Columns
@@ -327,4 +443,38 @@ ex_csv_zip(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.csv'),
 # Export data to TSV for import into UW SQLShare
 ex_tsv(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.tsv'), 
                        sep='', collapse=''))
+```
+
+## Geocode Water Systems
+
+Get water system location coordinates from Google. Since Google will not allow
+a non-commercial user to look up more than 1500 locations a day, we will not 
+include the system address in our search. Instead, we will only search by city,
+state, and zipcode. Export as TSV and zipped CSV as with other data sources.
+
+```{r, echo=TRUE, message=FALSE}
+if (! file.exists(paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
+                        sep='', collapse=''))) {
+    # Get locations from water systems data.frame and format as string
+    locations <- filter(systems, WSState=="WA") %>% 
+        select(PWSCity, WSState, WSZipCode) %>% unique() %>% 
+        mutate(location = paste(PWSCity, WSState, WSZipCode, sep = ", "))
+    
+    # Get geocodes from Google's Geocode Service using `geocode` function
+    lonlat <- geocode(locations$location, messaging=FALSE)
+    locations <- data.frame(locations$PWSCity, locations$WSState, 
+                            locations$WSZipCode, lonlat$lon, lonlat$lat, 
+                            stringsAsFactors=FALSE)
+    
+    # Set column names on locations data.frame
+    names(locations) <- c("PWSCity", "WSState", "WSZipCode", "lon", "lat")
+    
+    # Export data to Zipped CSV for import into phpMyAdmin
+    ex_csv_zip(locations, paste(c(datadir, '/', filename_prefix, 
+                                  'locations.csv'), sep='', collapse=''))
+    
+    # Export data to TSV for import into UW SQLShare
+    ex_tsv(locations, paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
+                            sep='', collapse=''))
+}
 ```
