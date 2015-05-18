@@ -76,7 +76,7 @@ img {
     stop(&quot;Java not found. Install Java first. https://java.com/en/download/&quot;)
 }</code></pre>
 <p>Load the required R packages.</p>
-<pre class="r"><code>for (pkg in c(&quot;knitr&quot;, &quot;rJava&quot;, &quot;XLConnect&quot;, &quot;dplyr&quot;, &quot;ggmap&quot;)) {
+<pre class="r"><code>for (pkg in c(&quot;knitr&quot;, &quot;hash&quot;, &quot;rJava&quot;, &quot;XLConnect&quot;, &quot;dplyr&quot;, &quot;ggmap&quot;)) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos=&quot;http://cran.fhcrc.org&quot;, dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -153,111 +153,24 @@ sources &lt;- as.data.frame(sapply(sources, toupper), stringsAsFactors=FALSE)</c
 </div>
 <div id="fix-inconsistent-city-names" class="section level3">
 <h3>Fix Inconsistent City Names</h3>
-<p>Fix inconsistencies in PWSCity column.</p>
-<pre><code>by_city &lt;- filter(systems, WSState==&quot;WA&quot;) %&gt;% group_by(PWSCity)
+<p>Fix inconsistencies (i.e., typographical errors) in the PWSCity column. As many (over a hundred) were found, we have saved these in a CSV file. We read the search-replace terms as key-value pairs into a <code>hash</code> and loop through them to perform the replacements.</p>
+<pre class="r"><code>typo_file &lt;- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
+                        sep='', collapse='')
+
+if (file.exists(typo_file)) {
+    typo_df &lt;- read.csv(typo_file, col.names=c(&quot;key&quot;, &quot;value&quot;), 
+                         header=FALSE, stringsAsFactors=FALSE)
+
+    typo_hash &lt;- hash(keys=typo_df$key, values=typo_df$value)
+    
+    for (typo in keys(typo_hash)) {
+        systems$PWSCity[systems$PWSCity == typo] &lt;- typo_hash[[typo]]
+    }
+}</code></pre>
+<p>You can visually inspect the city names and their frequency counts with these R commands:</p>
+<pre class="r"><code>by_city &lt;- filter(systems, WSState==&quot;WA&quot;) %&gt;% group_by(PWSCity)
 cities_count &lt;- summarize(by_city, count = n())
 View(cities_count)</code></pre>
-<pre class="r"><code>systems$PWSCity[systems$PWSCity == &quot;AMROY&quot;]               &lt;- &quot;AMBOY&quot;
-systems$PWSCity[systems$PWSCity == &quot;ANANCORTES&quot;]          &lt;- &quot;ANACORTES&quot;
-systems$PWSCity[systems$PWSCity == &quot;BAINBRIDGE&quot;]          &lt;- &quot;BAINBRIDGE ISLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BAINBRIDGE IS.&quot;]      &lt;- &quot;BAINBRIDGE ISLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BAINBRIDGE IS&quot;]       &lt;- &quot;BAINBRIDGE ISLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BAINBRIDGE_ISLAND&quot;]   &lt;- &quot;BAINBRIDGE ISLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BATTLE GOUND&quot;]        &lt;- &quot;BATTLE GROUND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BATTLEGROUND&quot;]        &lt;- &quot;BATTLE GROUND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BATTLE GROUNG&quot;]       &lt;- &quot;BATTLE GROUND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BELFARE&quot;]             &lt;- &quot;BELFAIR&quot;
-systems$PWSCity[systems$PWSCity == &quot;BELILNGHAM&quot;]          &lt;- &quot;BELLINGHAM&quot;
-systems$PWSCity[systems$PWSCity == &quot;BENTON&quot;]              &lt;- &quot;BENTON CITY&quot;
-systems$PWSCity[systems$PWSCity == &quot;BERING&quot;]              &lt;- &quot;BARING&quot;
-systems$PWSCity[systems$PWSCity == &quot;BLAIN&quot;]               &lt;- &quot;BLAINE&quot;
-systems$PWSCity[systems$PWSCity == &quot;BLAKELY&quot;]             &lt;- &quot;BLAKELY ISLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;BOART&quot;]               &lt;- &quot;HOBART&quot;
-systems$PWSCity[systems$PWSCity == &quot;BONNEYLAKE&quot;]          &lt;- &quot;BONNEY LAKE&quot;
-systems$PWSCity[systems$PWSCity == &quot;BOTHEL&quot;]              &lt;- &quot;BOTHELL&quot;
-systems$PWSCity[systems$PWSCity == &quot;BOX&quot;]                 &lt;- &quot;BOW&quot;
-systems$PWSCity[systems$PWSCity == &quot;BRUSH PARIRIE&quot;]       &lt;- &quot;BRUSH PRAIRIE&quot;
-systems$PWSCity[systems$PWSCity == &quot;BUCKLY&quot;]              &lt;- &quot;BUCKLEY&quot;
-systems$PWSCity[systems$PWSCity == &quot;CASTLEROCK&quot;]          &lt;- &quot;CASTLE ROCK&quot;
-systems$PWSCity[systems$PWSCity == &quot;CLEARWATER-FORKS&quot;]    &lt;- &quot;FORKS&quot;
-systems$PWSCity[systems$PWSCity == &quot;CONCULLY&quot;]            &lt;- &quot;CONCONULLY&quot;
-systems$PWSCity[systems$PWSCity == &quot;CORNATION&quot;]           &lt;- &quot;CARNATION&quot;
-systems$PWSCity[systems$PWSCity == &quot;COUPEVILE&quot;]           &lt;- &quot;COUPEVILLE&quot;
-systems$PWSCity[systems$PWSCity == &quot;CRESTON&quot;]             &lt;- &quot;PRESTON&quot;
-systems$PWSCity[systems$PWSCity == &quot;DESERTAIRE&quot;]          &lt;- &quot;DESERT AIRE&quot;
-systems$PWSCity[systems$PWSCity == &quot;DESMOINES&quot;]           &lt;- &quot;DES MOINES&quot;
-systems$PWSCity[systems$PWSCity == &quot;EASTONVILLE&quot;]         &lt;- &quot;EATONVILLE&quot;
-systems$PWSCity[systems$PWSCity == &quot;EAST SOUND&quot;]          &lt;- &quot;EASTSOUND&quot;
-systems$PWSCity[systems$PWSCity == &quot;EAST WENTACHEE&quot;]      &lt;- &quot;EAST WENATCHEE&quot;
-systems$PWSCity[systems$PWSCity == &quot;EATNOVILLE&quot;]          &lt;- &quot;EATONVILLE&quot;
-systems$PWSCity[systems$PWSCity == &quot;E WENATCHEE&quot;]         &lt;- &quot;EAST WENATCHEE&quot;
-systems$PWSCity[systems$PWSCity == &quot;GOLDBAR&quot;]             &lt;- &quot;GOLD BAR&quot;
-systems$PWSCity[systems$PWSCity == &quot;GOLENDALE&quot;]           &lt;- &quot;GOLDENDALE&quot;
-systems$PWSCity[systems$PWSCity == &quot;GRANDVIEW RD&quot;]        &lt;- &quot;GRANDVIEW&quot;
-systems$PWSCity[systems$PWSCity == &quot;GRANVIEW&quot;]            &lt;- &quot;GRANDVIEW&quot;
-systems$PWSCity[systems$PWSCity == &quot;GREEN WATER&quot;]         &lt;- &quot;GREENWATER&quot;
-systems$PWSCity[systems$PWSCity == &quot;HARRA&quot;]               &lt;- &quot;HARRAH&quot;
-systems$PWSCity[systems$PWSCity == &quot;HOODS PORT&quot;]          &lt;- &quot;HOODSPORT&quot;
-systems$PWSCity[systems$PWSCity == &quot;ILLWACO&quot;]             &lt;- &quot;ILWACO&quot;
-systems$PWSCity[systems$PWSCity == &quot;ISSAGUAH&quot;]            &lt;- &quot;ISSAQUAH&quot;
-systems$PWSCity[systems$PWSCity == &quot;ISSQUAH&quot;]             &lt;- &quot;ISSAQUAH&quot;
-systems$PWSCity[systems$PWSCity == &quot;JOINT BASE LEWIS MCCHORD&quot;] &lt;- &quot;JOINT BASE LEWIS-MCCHORD&quot;
-systems$PWSCity[systems$PWSCity == &quot;KENNEWEICK&quot;]          &lt;- &quot;KENNEWICK&quot;
-systems$PWSCity[systems$PWSCity == &quot;KENNWICK&quot;]            &lt;- &quot;KENNEWICK&quot;
-systems$PWSCity[systems$PWSCity == &quot;LACENTER&quot;]            &lt;- &quot;LA CENTER&quot;
-systems$PWSCity[systems$PWSCity == &quot;LACONNER&quot;]            &lt;- &quot;LA CONNER&quot;
-systems$PWSCity[systems$PWSCity == &quot;LILLIWAP&quot;]            &lt;- &quot;LILLIWAUP&quot;
-systems$PWSCity[systems$PWSCity == &quot;LITTLEROCK&quot;]          &lt;- &quot;LITTLE ROCK&quot;
-systems$PWSCity[systems$PWSCity == &quot;LONGBEACH&quot;]           &lt;- &quot;LONG BEACH&quot;
-systems$PWSCity[systems$PWSCity == &quot;LYNDED&quot;]              &lt;- &quot;LYNDEN&quot;
-systems$PWSCity[systems$PWSCity == &quot;MALLOT&quot;]              &lt;- &quot;MALOTT&quot;
-systems$PWSCity[systems$PWSCity == &quot;MALO&quot;]                &lt;- &quot;MALOTT&quot;
-systems$PWSCity[systems$PWSCity == &quot;MANSON, WA&quot;]          &lt;- &quot;MANSON&quot;
-systems$PWSCity[systems$PWSCity == &quot;MAPLE VAQLLEY&quot;]       &lt;- &quot;MAPLE VALLEY&quot;
-systems$PWSCity[systems$PWSCity == &quot;MAPLLE VALLEY&quot;]       &lt;- &quot;MAPLE VALLEY&quot;
-systems$PWSCity[systems$PWSCity == &quot;MC KENNA&quot;]            &lt;- &quot;MCKENNA&quot;
-systems$PWSCity[systems$PWSCity == &quot;MEDICAL LK&quot;]          &lt;- &quot;MEDICAL LAKE&quot;
-systems$PWSCity[systems$PWSCity == &quot;METALINE&quot;]            &lt;- &quot;METALINE FALLS&quot;
-systems$PWSCity[systems$PWSCity == &quot;MOSSYROCK&quot;]           &lt;- &quot;MOSSYROCK&quot;
-systems$PWSCity[systems$PWSCity == &quot;MOUNT LAKE TERRACE&quot;]  &lt;- &quot;MOUNTLAKE TERRACE&quot;
-systems$PWSCity[systems$PWSCity == &quot;MOXEE CITY&quot;]          &lt;- &quot;MOXEE&quot;
-systems$PWSCity[systems$PWSCity == &quot;MUKITEO&quot;]             &lt;- &quot;MUKILTEO&quot;
-systems$PWSCity[systems$PWSCity == &quot;NEWCASTLE&quot;]           &lt;- &quot;NEW CASTLE&quot;
-systems$PWSCity[systems$PWSCity == &quot;NORTHBEND&quot;]           &lt;- &quot;NORTH BEND&quot;
-systems$PWSCity[systems$PWSCity == &quot;OCEANPARK&quot;]           &lt;- &quot;OCEAN PARK&quot;
-systems$PWSCity[systems$PWSCity == &quot;PARCELLS RD NE&quot;]      &lt;- &quot;KINGSTON&quot;
-systems$PWSCity[systems$PWSCity == &quot;PAULSBO&quot;]             &lt;- &quot;POULSBO&quot;
-systems$PWSCity[systems$PWSCity == &quot;POINT ROBERT&quot;]        &lt;- &quot;POINT ROBERTS&quot;
-systems$PWSCity[systems$PWSCity == &quot;POULBSO&quot;]             &lt;- &quot;POULSBO&quot;
-systems$PWSCity[systems$PWSCity == &quot;PROSSER RD&quot;]          &lt;- &quot;PROSSER&quot;
-systems$PWSCity[systems$PWSCity == &quot;PT ANGELES&quot;]          &lt;- &quot;PORT ANGELES&quot;
-systems$PWSCity[systems$PWSCity == &quot;PT ORCHARD&quot;]          &lt;- &quot;PORT ORCHARD&quot;
-systems$PWSCity[systems$PWSCity == &quot;QULICENE&quot;]            &lt;- &quot;QUILCENE&quot;
-systems$PWSCity[systems$PWSCity == &quot;RANDAL&quot;]              &lt;- &quot;RANDLE&quot;
-systems$PWSCity[systems$PWSCity == &quot;RAVENSADALE&quot;]         &lt;- &quot;RAVENSDALE&quot;
-systems$PWSCity[systems$PWSCity == &quot;REARDON&quot;]             &lt;- &quot;REARDAN&quot;
-systems$PWSCity[systems$PWSCity == &quot;REDMOND WA 98052&quot;]    &lt;- &quot;REDMOND&quot;
-systems$PWSCity[systems$PWSCity == &quot;REMOND&quot;]              &lt;- &quot;REDMOND&quot;
-systems$PWSCity[systems$PWSCity == &quot;REVENSDALE&quot;]          &lt;- &quot;RAVENSDALE&quot;
-systems$PWSCity[systems$PWSCity == &quot;RIDFEFIELD&quot;]          &lt;- &quot;RIDGEFIELD&quot;
-systems$PWSCity[systems$PWSCity == &quot;RIDGEFFIELD&quot;]         &lt;- &quot;RIDGEFIELD&quot;
-systems$PWSCity[systems$PWSCity == &quot;SEATTTLE&quot;]            &lt;- &quot;SEATTLE&quot;
-systems$PWSCity[systems$PWSCity == &quot;SEDOR WOOLLEY&quot;]       &lt;- &quot;SEDRO WOOLLEY&quot;
-systems$PWSCity[systems$PWSCity == &quot;SEDRO WOOLEY&quot;]        &lt;- &quot;SEDRO WOOLLEY&quot;
-systems$PWSCity[systems$PWSCity == &quot;SEQUIM BAY&quot;]          &lt;- &quot;SEQUIM&quot;
-systems$PWSCity[systems$PWSCity == &quot;SILVERCREEK&quot;]         &lt;- &quot;SILVER CREEK&quot;
-systems$PWSCity[systems$PWSCity == &quot;SILVERLAKE&quot;]          &lt;- &quot;SILVER LAKE&quot;
-systems$PWSCity[systems$PWSCity == &quot;SMMAMISH&quot;]            &lt;- &quot;SAMMAMISH&quot;
-systems$PWSCity[systems$PWSCity == &quot;SNQUAMISH&quot;]           &lt;- &quot;SUQUAMISH&quot;
-systems$PWSCity[systems$PWSCity == &quot;SOAP LK&quot;]             &lt;- &quot;SOAP LAKE&quot;
-systems$PWSCity[systems$PWSCity == &quot;S[PLAME&quot;]             &lt;- &quot;SPOKANE&quot;
-systems$PWSCity[systems$PWSCity == &quot;STELACOOM&quot;]           &lt;- &quot;STEILACOOM&quot;
-systems$PWSCity[systems$PWSCity == &quot;TROUTLAKE&quot;]           &lt;- &quot;TROUT LAKE&quot;
-systems$PWSCity[systems$PWSCity == &quot;VASHION ISLAND&quot;]      &lt;- &quot;VASHON ISLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;WEANTCHEE&quot;]           &lt;- &quot;WENATCHEE&quot;
-systems$PWSCity[systems$PWSCity == &quot;WENATHCHEE&quot;]          &lt;- &quot;WENATCHEE&quot;
-systems$PWSCity[systems$PWSCity == &quot;W RICHLAND&quot;]          &lt;- &quot;WEST RICHLAND&quot;
-systems$PWSCity[systems$PWSCity == &quot;W. RICHLAND&quot;]         &lt;- &quot;WEST RICHLAND&quot;</code></pre>
 </div>
 <div id="remove-thousands-separator" class="section level3">
 <h3>Remove Thousands Separator</h3>
@@ -419,7 +332,7 @@ ex_tsv(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.tsv'),
 </div>
 <div id="geocode-water-systems" class="section level2">
 <h2>Geocode Water Systems</h2>
-<p>Get water system location coordinates from Google. Since Google will not allow a non-commercial user to look up more than 1500 locations a day, we will not include the system address in our search. Instead, we will only search by city, state, and zipcode. Export as TSV and zipped CSV as with other data sources.</p>
+<p>Get water system location coordinates from Google with <code>geocode</code> from the <a href="http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf">ggmap</a> package. Since Google will not allow a non-commercial user to look up more than 1500 locations a day, we will not include the system address in our search. Instead, we will only search by city, state, and zipcode. Export as TSV and zipped CSV as with other data sources.</p>
 <pre class="r"><code>if (! file.exists(paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
                         sep='', collapse=''))) {
     # Get locations from water systems data.frame and format as string
