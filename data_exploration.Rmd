@@ -2,12 +2,31 @@
 title: "Washington State Drinking Water Fluoridation"
 author: "Brian High"
 date: "05/17/2015"
-output: 
-    html_document:
-        keep_md: yes
-        fig_caption: yes
-        fig_width: 8
+output:
+  pdf_document:
+    fig_caption: yes
+  html_document:
+    fig_caption: yes
+    fig_width: 8
+    keep_md: yes
 ---
+
+## Introduction
+
+This project explores the use of publicly available data to investigate 
+drinking water system fluoride levels in Washington State. Methods for 
+reproducible data cleanup and exploratory analysis using R, RMarkdown, knitr, 
+are demonstrated, as well as some of the plotting capabilities of ggplot2.
+
+## Data Sources
+
+Data files have been prepared using a companion 
+[Markdown script](https://github.com/brianhigh/wa-water-quality/blob/master/data_cleanup_and_export.md) 
+to generate text data files. These data and Markdown files are hosted in the 
+[wa-water-quality](https://github.com/brianhigh/wa-water-quality) repository 
+on [GitHub](https://github.com).
+
+The water system data come from [WA DOH Water System Data](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/DataDownload) and [WA DOH Fluoride in Driking Water](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater). The lat/long coordinates were generated using the [ggmap](http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf) package for R.
 
 ## Setup
 
@@ -27,7 +46,7 @@ for (pkg in c("knitr", "dplyr", "ggplot2", "maps")) {
 Configure `knitr` options.
 
 ```{r set_options, echo=TRUE, message=FALSE}
-opts_chunk$set(tidy=FALSE, cache=FALSE)
+opts_chunk$set(tidy=FALSE, cache=TRUE)
 ```
 
 Create the data folder if needed.
@@ -86,9 +105,16 @@ nat.fl.high <- nat.fl.high[complete.cases(nat.fl.high),]
 
 ## Violin Plot of Natural Fluoride Levels
 
-Make a violin plot of fluoride levels by system owner type.
+Make a violin plot of fluoride levels by system owner type. The points represent 
+Washington State water systems with natural (non-fluoridated) fluoride concentration 
+levels. The colors indicate the size of the population served by the water system. 
+The width of the shapes vary according to the density of points plotted at a 
+given fluoride level. The light green band shows Washington's range of "optimal" 
+fluoride levels (0.8 to 1.3 mg/L). The green line marks the new (April, 2015) 
+[US HHS](http://www.hhs.gov/news/press/2015pres/04/20150427a.html) 
+[recommended](http://www.cdc.gov/fluoridation/faqs/) level of 0.7 mg/L.
 
-```{r}
+```{r WA-Water-Systems-By-owner-Type, cache=FALSE, fig.cap="Washington State Water Systems by Owner Type"}
 ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) + 
     geom_violin(alpha=0.5, color="gray") + geom_jitter(size=2, alpha=0.3,
       position = position_jitter(width = 0.05), aes(color=Population)) +
@@ -101,17 +127,18 @@ ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) +
     geom_rect(data=nat.fl[1,], 
               aes(ymin=log(.8), ymax=log(1.3), xmin=0, xmax=Inf), 
               fill="green", alpha=.1, label="Optimal Fluoridation") + 
-    geom_text(aes(8, 0, label="WA.Optimal", group=NULL), size = 4, 
+    geom_text(aes(7.5, 0, label="WA.Optimal", group=NULL), size = 4, 
         color = "darkgreen", data=nat.fl[1,], parse = T) + 
     geom_hline(aes(yintercept=log(0.7), alpha=.5), color = "darkgreen") + 
-    geom_text(aes(8, -.5, label="US.2015", group=NULL), size = 4, 
+    geom_text(aes(7.5, -.5, label="US.2015", group=NULL), size = 4, 
         color = "darkgreen", data=nat.fl[1,], parse = T) +
     guides(col = guide_legend(reverse = FALSE))
 ```
 
 ## Prepare Map Data
 
-Prepare the map data.frame.
+Prepare the map `data.frame` using the `map_data` function from the `ggplot2`
+package.
 
 ```{r}
 # Capitalize first letter of word - for use with proper nouns
@@ -133,7 +160,7 @@ wa$county <- wa$subregion
 cnames <- aggregate(cbind(long, lat) ~ subregion, data=wa, 
                     FUN=function(x)mean(range(x)))
 
-# Create the state map with counties outlined in grey
+# Create the base state map with counties outlined in grey
 wamap <- ggplot(wa, aes(long, lat)) +  
     geom_polygon(aes(group=group), color='darkgrey', fill=NA) +
     geom_text(data=cnames, aes(long, lat, label = subregion), size=3) + 
@@ -148,14 +175,16 @@ wamap <- ggplot(wa, aes(long, lat)) +
 
 ## Untreated: Natural Fluoride Levels
 
-Make a map of populations served by water systems with natural fluoride levels.
+Make a map of populations served by non-fluoridated water systems with natural 
+fluoride levels.
 
-```{r}
+```{r WA-Natural-Fluoride, cache=FALSE, fig.cap="Washington State Natural Fluoride Water Systems"}
 wamap + geom_point(data=nat.fl, inherit.aes=F, 
-        aes(x=lon, y=lat, group=FLevel, color=FLevel, size=Population, 
-            fill=FLevel), 
+            aes(x=lon, y=lat, group=FLevel, color=FLevel, size=Population, 
+                fill=FLevel), 
         position=position_jitterdodge(jitter.width=0.1, dodge.width=0.1), 
-        alpha=.5) + scale_shape_discrete(solid=T) + 
+        alpha=.3) + scale_shape_discrete(solid=T) + 
+    scale_size_manual(values = seq(2, 9, by=2)) +
     scale_color_manual(values=c("blue", "green", "red")) + 
     ggtitle(label = paste("Washington Populations Served by Water Systems",
                           "with Natural (Untreated) Fluoride Levels", 
@@ -168,9 +197,10 @@ wamap + geom_point(data=nat.fl, inherit.aes=F,
 Make a map of populations served by water systems with natural fluoride levels 
 above Washington State's "optimal" range of 0.8 - 1.3 mg/L.
 
-```{r}
+```{r WA-Natural-Fluoride-Over, cache=FALSE, fig.cap="Washington State Natural Fluoride Levels Over Range"}
 wamap + geom_point(data=nat.fl.high, inherit.aes=F, 
-               aes(x=lon, y=lat, size=Population), colour="red", alpha=.4) +
+               aes(x=lon, y=lat, size=Population), colour="red", alpha=.3) +
+        scale_size_manual(values = seq(2, 9, by=2)) +
     ggtitle(label = paste("Washington Populations Served by Water Systems",
                           "with Natural (Untreated) Fluoride Levels", 
                           "Above Washington State's",
@@ -183,7 +213,7 @@ Make a map of populations served by water systems with natural or treated
 fluoride levels falling inside or outside of Washington State's "optimal" range 
 of 0.8 - 1.3 mg/L.
 
-```{r}
+```{r WA-Optimal-Fluoride, cache=FALSE, fig.cap="Washington State Optimal and Nonoptimal Fluoride Levels"}
 fl$Optimal <- with(fl, Treatment=="TREATED" | Treatment=="INTERTIED" | FLevel == "Optimal")
 fl$Optimal <- factor(c('No', 'Yes')[fl$Optimal + 1])
 fl.opt <- select(fl, County, PWSID, SystemName, ResPop, OwnerTypeDesc, 
@@ -191,7 +221,8 @@ fl.opt <- select(fl, County, PWSID, SystemName, ResPop, OwnerTypeDesc,
 fl.opt <- fl[complete.cases(fl.opt),]
 
 wamap + geom_point(data=fl.opt, inherit.aes=F, 
-               aes(x=lon, y=lat, size=Population, color=Optimal), alpha=.4) +
+               aes(x=lon, y=lat, size=Population, color=Optimal), alpha=.3) +
+    scale_size_manual(values = seq(2, 9, by=2)) +
     scale_color_manual(values=c("red", "green")) +
     ggtitle(label = paste("Washington Populations Served by Water Systems",
                           "with Fluoride Levels Relative to Washington State's",

@@ -2,6 +2,23 @@
 Brian High  
 05/17/2015  
 
+## Introduction
+
+This project explores the use of publicly available data to investigate 
+drinking water system fluoride levels in Washington State. Methods for 
+reproducible data cleanup and exploratory analysis using R, RMarkdown, knitr, 
+are demonstrated, as well as some of the plotting capabilities of ggplot2.
+
+## Data Sources
+
+Data files have been prepared using a companion 
+[Markdown script](https://github.com/brianhigh/wa-water-quality/blob/master/data_cleanup_and_export.md) 
+to generate text data files. These data and Markdown files are hosted in the 
+[wa-water-quality](https://github.com/brianhigh/wa-water-quality) repository 
+on [GitHub](https://github.com).
+
+The water system data come from [WA DOH Water System Data](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/DataDownload) and [WA DOH Fluoride in Driking Water](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater). The lat/long coordinates were generated using the [ggmap](http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf) package for R.
+
 ## Setup
 
 Load the required R packages.
@@ -22,7 +39,7 @@ Configure `knitr` options.
 
 
 ```r
-opts_chunk$set(tidy=FALSE, cache=FALSE)
+opts_chunk$set(tidy=FALSE, cache=TRUE)
 ```
 
 Create the data folder if needed.
@@ -100,15 +117,15 @@ ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) +
     geom_rect(data=nat.fl[1,], 
               aes(ymin=log(.8), ymax=log(1.3), xmin=0, xmax=Inf), 
               fill="green", alpha=.1, label="Optimal Fluoridation") + 
-    geom_text(aes(8, 0, label="WA.Optimal", group=NULL), size = 4, 
+    geom_text(aes(7.5, 0, label="WA.Optimal", group=NULL), size = 4, 
         color = "darkgreen", data=nat.fl[1,], parse = T) + 
     geom_hline(aes(yintercept=log(0.7), alpha=.5), color = "darkgreen") + 
-    geom_text(aes(8, -.5, label="US.2015", group=NULL), size = 4, 
+    geom_text(aes(7.5, -.5, label="US.2015", group=NULL), size = 4, 
         color = "darkgreen", data=nat.fl[1,], parse = T) +
     guides(col = guide_legend(reverse = FALSE))
 ```
 
-![](data_exploration_files/figure-html/unnamed-chunk-5-1.png) 
+![WA Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-1.png) 
 
 ## Prepare Map Data
 
@@ -155,10 +172,11 @@ Make a map of populations served by water systems with natural fluoride levels.
 
 ```r
 wamap + geom_point(data=nat.fl, inherit.aes=F, 
-        aes(x=lon, y=lat, group=FLevel, color=FLevel, size=Population, 
-            fill=FLevel), 
+            aes(x=lon, y=lat, group=FLevel, color=FLevel, size=Population, 
+                fill=FLevel), 
         position=position_jitterdodge(jitter.width=0.1, dodge.width=0.1), 
-        alpha=.5) + scale_shape_discrete(solid=T) + 
+        alpha=.3) + scale_shape_discrete(solid=T) + 
+    scale_size_manual(values = seq(2, 9, by=2)) +
     scale_color_manual(values=c("blue", "green", "red")) + 
     ggtitle(label = paste("Washington Populations Served by Water Systems",
                           "with Natural (Untreated) Fluoride Levels", 
@@ -166,7 +184,7 @@ wamap + geom_point(data=nat.fl, inherit.aes=F,
                           "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
 ```
 
-![](data_exploration_files/figure-html/unnamed-chunk-7-1.png) 
+![WA Natural Fluoride Water Systems](data_exploration_files/figure-html/WA-Natural-Fluoride-1.png) 
 
 ## Natural: Exceeding Optimal Fluoride Levels
 
@@ -176,14 +194,15 @@ above Washington State's "optimal" range of 0.8 - 1.3 mg/L.
 
 ```r
 wamap + geom_point(data=nat.fl.high, inherit.aes=F, 
-               aes(x=lon, y=lat, size=Population), colour="red", alpha=.4) +
+               aes(x=lon, y=lat, size=Population), colour="red", alpha=.3) +
+        scale_size_manual(values = seq(2, 9, by=2)) +
     ggtitle(label = paste("Washington Populations Served by Water Systems",
                           "with Natural (Untreated) Fluoride Levels", 
                           "Above Washington State's",
                           "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
 ```
 
-![](data_exploration_files/figure-html/unnamed-chunk-8-1.png) 
+![WA Natural Fluoride Over Range](data_exploration_files/figure-html/WA-Natural-Fluoride-Over-1.png) 
 
 ## All Systems: Optimal and Nonoptimal Fluoride Levels
 
@@ -200,12 +219,13 @@ fl.opt <- select(fl, County, PWSID, SystemName, ResPop, OwnerTypeDesc,
 fl.opt <- fl[complete.cases(fl.opt),]
 
 wamap + geom_point(data=fl.opt, inherit.aes=F, 
-               aes(x=lon, y=lat, size=Population, color=Optimal), alpha=.4) +
+               aes(x=lon, y=lat, size=Population, color=Optimal), alpha=.3) +
+    scale_size_manual(values = seq(2, 9, by=2)) +
     scale_color_manual(values=c("red", "green")) +
     ggtitle(label = paste("Washington Populations Served by Water Systems",
                           "with Fluoride Levels Relative to Washington State's",
                           "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
 ```
 
-![](data_exploration_files/figure-html/unnamed-chunk-9-1.png) 
+![WA Optimal and Nonoptimal Fluoride](data_exploration_files/figure-html/WA-Optimal-Fluoride-1.png) 
 
