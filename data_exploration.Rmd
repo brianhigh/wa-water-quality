@@ -45,7 +45,7 @@ The water system data come from [WA DOH Water System Data](http://www.doh.wa.gov
 Load the required R packages.
 
 ```{r, echo=TRUE, message=FALSE}
-for (pkg in c("knitr", "dplyr", "ggplot2", "maps")) {
+for (pkg in c("knitr", "dplyr", "lattice", "ggplot2", "maps")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -124,18 +124,37 @@ Washington State Drinking Water Systems with natural (non-fluoridated) fluoride
 concentration levels. Start with a basic boxplot of the Fluoride Level (mg/L) 
 by Water System Owner Type.
 
-```{r WA-Water-Systems-By-owner-Type-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
-# Make a basic boxplot of log(mgL) by Water System Owner Type
-ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + 
-    labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
-                     "by Water System Owner Type", sep="\n"), 
-         x="Water System Owner Type", y = "Fluoride Level (mg/L)") + geom_boxplot()
+```{r WA-Water-Systems-By-owner-Type-Base-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+# Make a basic boxplot of mgL by Water System Owner Type
+par(cex.axis=.55)
+boxplot(mgL~OwnerTypeDesc, data=nat.fl)
 ```
 
-Let's make it a little nicer looking by using a lighter theme instead of 
-black-on-grey, by using a smaller x-axis label text, and by reducing the spread 
-of the outliers by using a log scale for the y-axis. We will also store the base
-parameters of this plot to build upon as we add more features to the plot.
+As there is a lot of spread at the higher fluoride levels, we'll try using a log
+scale for the y-axis.
+
+```{r WA-Water-Systems-By-owner-Type-Base-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+# Make a basic boxplot of mgL by Water System Owner Type
+par(cex.axis=.55)
+boxplot(mgL~OwnerTypeDesc, data=nat.fl, log="y")
+```
+
+As an alternative to the standard "base" plotting in R, we can use the `lattice`
+plotting system. Here is a boxplot faceted by residental population groups
+served by the water systems.
+
+```{r WA-Water-Systems-By-owner-Type-Lattice-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+bwplot(nat.fl$mgL~nat.fl$OwnerTypeDesc|nat.fl$Population,
+        ylab="log(Fluoride Level)", xlab="Water System Owner Type", log="y",
+        main="Fluoride Level by Water System Owner Type and Population",
+        layout=(c(1,4)))
+```
+
+One of the most popular plotting systems in R is the versatile `ggplot2` 
+package, which will be used for the rest of the plots in this document.
+
+We will store the essential parameters of this next plot to build upon as we add 
+more features to the plot.
 
 ```{r WA-Water-Systems-By-owner-Type-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Use grey colors, smaller x-asis lables, and use smaller outlier dots
