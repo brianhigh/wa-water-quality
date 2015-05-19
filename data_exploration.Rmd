@@ -102,7 +102,8 @@ fl <- inner_join(fl, fluoride, by=c("PWSID"))
 fl$Treatment <- as.factor(fl$Treatment)
 
 # Add some grouping factors
-fl$F.Level <- cut(fl$mgL, c(0, .8, 1.3, Inf), labels=c("Low", "Optimal", "High"))
+fl$F.Level <- cut(fl$mgL, c(0, .8, 1.3, Inf), 
+                  labels=c("Below", "Optimal", "Above"))
 fl$Population <- cut(fl$ResPop, 
     c(0, 100, 1000, 10000, Inf), labels=c("0-100", "100-1K", "1K-10K", ">10K"))
 
@@ -128,7 +129,7 @@ by Water System Owner Type.
 ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + 
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
-         x="Water System Owner Type", y = "Fluoride Level") + geom_boxplot()
+         x="Water System Owner Type", y = "Fluoride Level (mg/L)") + geom_boxplot()
 ```
 
 Let's make it a little nicer looking by using a lighter theme instead of 
@@ -142,7 +143,7 @@ plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) +
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
         x="Water System Owner Type", y = "log(Fluoride Level)") +
-        theme_light() + coord_equal() + theme(axis.text.x = element_text(size=8)) 
+        theme_light() + coord_equal() + theme(axis.text.x = element_text(size=7)) 
 
 plot + geom_boxplot(outlier.size=1)
 ```
@@ -250,7 +251,7 @@ ggplot(nat.fl.over, aes(x=SystemName, y=mgL)) + coord_flip() +
     ggtitle(paste("Washington State Drinking Water Systems",
                   "Exceeding EPA MCL of 4 mg/L", sep="\n")) +
     theme(axis.text.y = element_text(hjust = 1, size=10)) + theme_classic() +
-    labs(y="Fluoride (mg/L)", x=NULL)
+    labs(y="Fluoride Level (mg/L)", x=NULL)
 ```
 
 ## Prepare Map Data
@@ -297,7 +298,24 @@ wamap <- ggplot(wa, aes(long, lat)) +
 wamap
 ```
 
-## Untreated: Natural Fluoride Levels
+## Untreated Systems Exceeding Optimal Fluoride Levels
+
+Make a map of populations Served by Drinking Water Systems with natural 
+fluoride levels above Washington State's "optimal" range of 0.8 - 1.3 mg/L.
+
+```{r WA-Natural-Fluoride-Over, cache=FALSE, fig.cap="Washington State Natural Fluoride Levels Over Optimal Range"}
+# Make the map
+wamap + geom_point(data=nat.fl.high, inherit.aes=F, 
+               aes(x=lon, y=lat, size=Population), colour="darkred", alpha=.3) +
+        scale_size_manual(values = seq(3, 12, by=2)) +
+    guides(colour = guide_legend(override.aes = list(size=5))) + 
+    ggtitle(label = paste("Washington Populations Served by Drinking Water Systems",
+                          "with Natural (Untreated) Fluoride Levels", 
+                          "Above Washington State's",
+                          "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
+```
+
+## Untreated Natural Fluoride Levels
 
 Make a map of populations served by non-fluoridated water systems with natural 
 fluoride levels.
@@ -318,23 +336,6 @@ wamap + geom_point(data=nat.fl, inherit.aes=F,
                           "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
 ```
 
-## Natural: Exceeding Optimal Fluoride Levels
-
-Make a map of populations Served by Drinking Water Systems with natural fluoride levels 
-above Washington State's "optimal" range of 0.8 - 1.3 mg/L.
-
-```{r WA-Natural-Fluoride-Over, cache=FALSE, fig.cap="Washington State Natural Fluoride Levels Over Optimal Range"}
-# Make the map
-wamap + geom_point(data=nat.fl.high, inherit.aes=F, 
-               aes(x=lon, y=lat, size=Population), colour="darkred", alpha=.3) +
-        scale_size_manual(values = seq(3, 12, by=2)) +
-    guides(colour = guide_legend(override.aes = list(size=5))) + 
-    ggtitle(label = paste("Washington Populations Served by Drinking Water Systems",
-                          "with Natural (Untreated) Fluoride Levels", 
-                          "Above Washington State's",
-                          "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
-```
-
 ## All Systems: Optimal and Nonoptimal Fluoride Levels
 
 Make a map of populations Served by Drinking Water Systems with natural or treated 
@@ -343,7 +344,7 @@ of 0.8 - 1.3 mg/L.
 
 ```{r WA-Optimal-Fluoride, cache=FALSE, fig.cap="Washington State Optimal and Nonoptimal Fluoride Levels"}
 # Assign Optimal as T/F based on fluoride concentrations (mgL) and system type
-fl$Optimal <- with(fl, Treatment=="TREATED" | Treatment=="INTERTIED" | F.Level == "Optimal")
+fl$Optimal <- with(fl, Treatment=="TREATED" | Treatment=="INTERTIED" | F.Level=="Optimal")
 
 # Convert T/F to Yes/No
 fl$Optimal <- factor(c('No', 'Yes')[fl$Optimal + 1])
@@ -372,7 +373,7 @@ fluoride levels relative to US HHS ("Health Department") and US EPA guidelines.
 ```{r WA-Fluoride-US-Rec, cache=FALSE, fig.cap="Washington State Fluoride Levels Relative to US Recommendations and Regulations"}
 # Assign US.F.Level based on fluoride concentrations (mgL)
 fl$US.F.Level <- cut(fl$mgL, c(-Inf, 0, .7, 2, 4, Inf), 
-                   labels=c("Unknown", "< HHS .7", "< EPA 2", "< EPA 4", "> EPA 4"))
+            labels=c("Unknown", "< HHS .7", "< EPA 2", "< EPA 4", "> EPA 4"))
 
 # Assign remaining US.F.Levels for water systems without concentrations (mgL)
 fl$US.F.Level[with(fl, Treatment=="TREATED" | Treatment=="INTERTIED")] <- "< EPA 2"
