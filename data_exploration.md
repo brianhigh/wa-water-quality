@@ -163,6 +163,20 @@ bwplot(nat.fl$mgL~nat.fl$OwnerTypeDesc|nat.fl$Population,
 
 ![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-Lattice-Box0-1.png) 
 
+Next, let's reverse the axes and try a different layout. We'll also use the 
+`with` function so we don't have to keep repeating the name of the data.frame 
+when we refer to column names.
+
+
+```r
+with(nat.fl, bwplot(OwnerTypeDesc~mgL|Population,
+        xlab="log(Fluoride Level)", ylab="Water System Owner Type", log="x",
+        main="Fluoride Level by Water System Owner Type and Population",
+        layout=(c(2,2))))
+```
+
+![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-Lattice-Box1-1.png) 
+
 One of the most popular plotting systems in R is the versatile `ggplot2` 
 package, which will be used for the rest of the plots in this document.
 
