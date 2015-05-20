@@ -37,7 +37,7 @@ Load the required R packages.
 
 
 ```r
-for (pkg in c("knitr", "dplyr", "lattice", "ggplot2", "maps")) {
+for (pkg in c("knitr", "dplyr", "lattice", "ggplot2", "gridExtra", "maps")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -163,7 +163,7 @@ bwplot(nat.fl$mgL~nat.fl$OwnerTypeDesc|nat.fl$Population,
 
 ![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-Lattice-Box0-1.png) 
 
-Next, let's reverse the axes and try a different layout. We'll also use the 
+Next, let's swap the axes and try a different layout. We'll also use the 
 `with` function so we don't have to keep repeating the name of the data.frame 
 when we refer to column names.
 
@@ -180,25 +180,45 @@ with(nat.fl, bwplot(OwnerTypeDesc~mgL|Population,
 One of the most popular plotting systems in R is the versatile `ggplot2` 
 package, which will be used for the rest of the plots in this document.
 
-We will store the essential parameters of this next plot to build upon as we add 
-more features to the plot.
+Here is a facetted plot like the previous one (2x2), without the coordinate 
+swap, and this time made using the `ggplot` function.
 
 
 ```r
-# Use grey colors, smaller x-asis lables, and use smaller outlier dots
+# Use light theme, 45-degre x-axis lables, smaller outlier dots, and 2x2 facet
+ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) + 
+    facet_wrap(~Population) +
+    labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
+                     "by Water System Owner Type", sep="\n"), 
+        x="Water System Owner Type", y = "log(Fluoride Level)") +
+        theme_light()  + 
+    theme(axis.text.x = element_text(size=8, angle=45, hjust=1, vjust=1)) +
+    geom_boxplot(outlier.size=1)
+```
+
+![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-Box0-1.png) 
+
+Let's start over again with the basic boxplot. We will store the essential 
+parameters of this next plot to build upon as we add more features to the plot. 
+
+
+```r
+# Use light theme, smaller x-asis lables, and use smaller outlier dots
 plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) + 
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
         x="Water System Owner Type", y = "log(Fluoride Level)") +
-        theme_light() + coord_equal() + theme(axis.text.x = element_text(size=7)) 
+        theme_light() + coord_equal() + theme(axis.text.x = element_text(size=7))
 
 plot + geom_boxplot(outlier.size=1)
 ```
 
 ![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-Box1-1.png) 
 
-Add points with jitter and colors for population groups. Remove the (now redundant) 
-black outlier dots.
+We can use color instead of facetting to represent the population groups.
+
+We'll also add data points with jitter and remove the (now redundant) black 
+outlier dots.
 
 
 ```r
@@ -279,6 +299,25 @@ MCLG (maximum contaminant level goal) of 4 mg/L. This is also the level of the
 EPA's enforceable MCL (maximum contaminant level). The orange line marks the 
 level of the [US EPA](http://water.epa.gov/drink/contaminants/basicinformation/fluoride.cfm#four)'s SMCL (secondary standard) of 2 mg/L, a non-enforceable 
 guideline. 
+
+For completeness, we'll add a footnote referencing the data sources.
+
+
+```r
+# Make the violin plot with data source attribution
+
+plot <- plot + geom_violin(alpha=0.3)
+
+data.src <- paste0(collapse = ' ', c('Data sources:', 
+                    'Washington State DOH (www.doh.wa.gov),', 
+                    'US EPA (water.epa.gov),',
+                    'and US HHS (www.hhs.gov)'))
+gplot <- arrangeGrob(plot, sub = textGrob(data.src, x=0, hjust=-0.1, vjust=0.1,
+                   gp = gpar(fontface="italic",fontsize=10)))
+gplot
+```
+
+![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-with-Attribution-1.png) 
 
 ## Water Systems Fluoride over EPA MCL
 
