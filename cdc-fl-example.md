@@ -66,14 +66,14 @@ plot(G3)
 ```
 
 <!-- GeoChart generated in R 3.1.3 by googleVis 0.5.8 package -->
-<!-- Thu May 21 09:31:26 2015 -->
+<!-- Thu May 21 09:40:50 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataGeoChartID366d173e90e6 () {
+function gvisDataGeoChartID3e466eb333bb () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -289,8 +289,8 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartGeoChartID366d173e90e6() {
-var data = gvisDataGeoChartID366d173e90e6();
+function drawChartGeoChartID3e466eb333bb() {
+var data = gvisDataGeoChartID3e466eb333bb();
 var options = {};
 options["width"] =    600;
 options["height"] =    400;
@@ -299,7 +299,7 @@ options["displayMode"] = "regions";
 options["resolution"] = "provinces";
 
     var chart = new google.visualization.GeoChart(
-    document.getElementById('GeoChartID366d173e90e6')
+    document.getElementById('GeoChartID3e466eb333bb')
     );
     chart.draw(data,options);
     
@@ -323,9 +323,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartGeoChartID366d173e90e6);
+callbacks.push(drawChartGeoChartID3e466eb333bb);
 })();
-function displayChartGeoChartID366d173e90e6() {
+function displayChartGeoChartID3e466eb333bb() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -349,11 +349,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID366d173e90e6"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID3e466eb333bb"></script>
  
 <!-- divChart -->
   
-<div id="GeoChartID366d173e90e6" 
+<div id="GeoChartID3e466eb333bb" 
   style="width: 600; height: 400;">
 </div>
 
@@ -361,3 +361,9 @@ callbacks.shift()();
 # Set options back to original options
 options(op)
 ```
+
+## Example Web Page
+
+The HTML output from running `knitr` on the Rmd file (the original version of 
+this document) is a stand-alone web page and can be found on 
+[Brian High's UW website](http://staff.washington.edu/high/fluoridation/cdc-fl-example.html)

@@ -68,3 +68,9 @@ plot(G3)
 # Set options back to original options
 options(op)
 ```
+
+## Example Web Page
+
+The HTML output from running `knitr` on the Rmd file (the original version of 
+this document) is a stand-alone web page and can be found on 
+[Brian High's UW website](http://staff.washington.edu/high/fluoridation/cdc-fl-example.html)
