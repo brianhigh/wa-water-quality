@@ -36,6 +36,7 @@ dent.file <- "data/wa_hca_dental_summary.xls"
 dent.url <- "http://www.hca.wa.gov/medicaid/dentalproviders/documents/999cntysumall.XLS"
 download.file(url=dent.url, destfile=dent.file,  mode="wb")
 
+library(XLConnect)
 dent.cnty <- readWorksheetFromFile(dent.file, sheet=1, header=FALSE,
                                    startRow=5, endRow=43, startCol=1, endCol=1)
 dent.exp <- readWorksheetFromFile(dent.file, sheet=1, header=FALSE,
@@ -75,9 +76,10 @@ gmap <- ggplot() + geom_map(data=expenses, aes(map_id=county, fill=FY2014),
                          low="white", midpoint=300, name="US$")
 
 library(gridExtra)
-data.src <- paste(c('Data sources:', 
-                    'Washington Health Care Authority (www.hca.wa.gov)', 
-                    'and GADM (gadm.org)'), sep=' ')
+data.src <- paste0(collapse = ' ', c('Data sources:', 
+                                     'WA DOH (www.doh.wa.gov),', 
+                                     'US EPA (water.epa.gov)',
+                                     'and HHS (www.hhs.gov)'))
 gmap <- arrangeGrob(gmap, sub = textGrob(data.src, x=0, hjust=-0.1, vjust=0.1,
                                  gp = gpar(fontface="italic", fontsize=12)))
 gmap
