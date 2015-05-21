@@ -1,0 +1,70 @@
+---
+title: "CDC Fluoridation googleVis Chart"
+author: "Brian High"
+date: "05/21/2015"
+output: 
+    html_document:
+        keep_md: yes
+---
+
+## Setup
+
+Load the required R packages.
+
+```{r, echo=TRUE, message=FALSE}
+for (pkg in c("XML", "googleVis")) {
+    if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
+        install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
+        if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
+            stop(paste0(c("Can't load package: ", pkg, "!"), collapse = ""))
+        }
+    }
+}
+```
+
+## Get the data
+
+Load the CSV data file if you have it, otherwise create the CSV by scraping the 
+fluoridation table from the CDC website.
+
+```{r}
+cdcfile <- "data/uw_cdc_dw_fluoridation.csv"
+if (file.exists(cdcfile)) {
+    # Read data from CSV
+    cdcfl <- read.csv(file = cdcfile, header = TRUE)
+} else {
+    # Scrape from CDC web page and save as CSV for later
+    library(XML)
+    cdcflweb<-readHTMLTable("http://www.cdc.gov/fluoridation/statistics/2012stats.htm")
+    cdcfl <- cdcflweb[[2]][3:53, c(1,4)]
+    names(cdcfl) <- c("State", "Percent")
+    cdcfl$State <- sapply(cdcfl$State, function (x) gsub("f[,gh]*$", "", x))
+    write.csv(cdcfl, file=cdcfile, row.names=FALSE)
+}
+```
+
+## Clean the data
+
+Remove the % sign from Percent and convert to numeric type.
+
+```{r}
+cdcfl$Percent <- as.numeric(sub("%", "", cdcfl$Percent))
+```
+
+## Create the gvisGeoChart
+
+```{r ComboExample, results='asis', tidy=FALSE}
+# Set options
+op <- options(gvis.plot.tag='chart')
+
+# Create gvisGeoChart
+suppressPackageStartupMessages(library(googleVis))
+G3 <- gvisGeoChart(cdcfl, "State", "Percent",
+                    options=list(region="US", displayMode="regions",
+                                 resolution="provinces",
+                                 width=600, height=400))
+plot(G3)
+
+# Set options back to original options
+options(op)
+```
