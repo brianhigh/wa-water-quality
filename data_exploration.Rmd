@@ -5,7 +5,7 @@ date: "05/18/2015"
 output:
   html_document:
     fig_caption: no
-    fig_width: 8.5
+    fig_width: 7
     keep_md: yes
   pdf_document:
     fig_caption: yes
@@ -15,20 +15,31 @@ output:
 
 ## Introduction
 
-This project explores the use of publicly available data to investigate 
-drinking water system fluoride levels in Washington State. Methods for 
-reproducible data cleanup and exploratory analysis using R, RMarkdown, knitr, 
-are demonstrated, as well as some of the plotting capabilities of ggplot2.
+This exploratory data analysis tutorial explores the use of publicly available 
+data to investigate drinking water system fluoride levels in Washington State. 
+Methods for reproducible data cleanup and exploratory analysis using R, RMarkdown, 
+and `knitr`, will be demonstrated, as well as some of the plotting capabilities 
+of R, especially `ggplot2`.
 
 We will compare the various water systems in Washington State relative to the
 state and federal recommendations for optimum levels of fluoride concentation 
-in drinking water. In April 2015, the [US HHS](http://www.hhs.gov/news/press/2015pres/04/20150427a.html) ("Health Department")
-released a lowering of the recommended fluoride concentration level from the 
-previous range of 0.7 to 1.2 mg/L to the new 0.7 mg/L level, which falls below 
-Washington State's [DOH ](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater) "optimal" range of 0.8 to 1.3 mg/L.
+in drinking water. 
 
-If Washington State follows this recommendation, what changes would need to be 
-made to the state's water systems?
+According to the US CDC, lower levels of fluoride 
+[help prevent tooth decay](http://www.cdc.gov/fluoridation/index.htm), but 
+higher levels increase the risk of 
+[dental fluorosis](http://www.cdc.gov/fluoridation/safety/dental_fluorosis.htm).
+
+In April 2015, the 
+[US HHS](http://www.hhs.gov/news/press/2015pres/04/20150427a.html) 
+("Health Department") released a lowering of the recommended fluoride 
+concentration in driking water from the previous range of 0.7 to 1.2 mg/L to 
+the new level of 0.7 mg/L, which falls below Washington State's 
+[DOH](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater) 
+"optimal" range of 0.8 to 1.3 mg/L.
+
+If Washington State follows this new recommendation, what changes would need to 
+be made to the state's drinking water systems? 
 
 ## Data Sources
 
@@ -36,9 +47,11 @@ Data files have been prepared using a companion
 [Markdown script](https://github.com/brianhigh/wa-water-quality/blob/master/data_cleanup_and_export.md) 
 to generate text data files. These data and Markdown files are hosted in the 
 [wa-water-quality](https://github.com/brianhigh/wa-water-quality) repository 
-on [GitHub](https://github.com). https://github.com/brianhigh/wa-water-quality
+on [GitHub](https://github.com). (https://github.com/brianhigh/wa-water-quality)
 
-The water system data come from [WA DOH Water System Data](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/DataDownload) (2015) and [WA DOH Fluoride in Drinking Water](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater) (2013). The lat/long coordinates were generated using the [ggmap](http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf) package for R.
+The water system data come from [WA DOH Water System Data](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/DataDownload) (2015) and [WA DOH Fluoride in Drinking Water](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/FluorideinDrinkingWater) (2013). The lat/long coordinates were generated using the [ggmap](http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf) package for R. The federally recommended 
+fluoride levels come from the [US HHS](http://www.hhs.gov/news/press/2015pres/04/20150427a.html) 
+("Health Department") and [US EPA](http://water.epa.gov/drink/contaminants/basicinformation/fluoride.cfm#four).
 
 ## Setup
 
@@ -61,7 +74,7 @@ Configure `knitr` options.
 opts_chunk$set(tidy=FALSE, cache=TRUE)
 ```
 
-Create the data folder if needed.
+Create the data folder, if necessary.
 
 ```{r}
 datadir <- "data"
@@ -112,17 +125,128 @@ nat.fl <- select(nat.fl, County, PWSID, SystemName, mgL, ResPop, OwnerTypeDesc,
                  lon, lat, Treatment, F.Level, Population)
 
 nat.fl <- nat.fl[complete.cases(nat.fl),]
-
-nat.fl.high <- nat.fl[nat.fl$mgL>1.3,]
-nat.fl.high <- nat.fl.high[complete.cases(nat.fl.high),]
 ```
 
-### Boxplots
+## Exploratory Data Analysis
 
-Let's get a first look at the data with some boxplots. We'll look at  
-Washington State Drinking Water Systems with natural (non-fluoridated) fluoride 
-concentration levels. Start with a basic boxplot of the Fluoride Level (mg/L) 
-by Water System Owner Type.
+We'll look at Washington State Drinking Water Systems with natural 
+(non-fluoridated) fluoride levels (concentration in mg/L) using plots and 
+summary tables.
+
+### Scatter Plots
+
+Let's get a first look at the data with some scatter plots. This `pairs` plot 
+of fluoride levels (mg/L), residential population (ResPop), and system owner 
+type descriptions (OwnerTypeDesc) shows some potentially interesting 
+relationships.
+
+```{r WA-Water-Systems-Pairs-Plot0, cache=FALSE, fig.cap="Washington State Untreated Drinking Water Systems Pairs Plot"}
+pairs(nat.fl[4:6], panel = panel.smooth)
+```
+
+To spead out the lower values, use a log scale.
+
+```{r WA-Water-Systems-Pairs-Plot1, cache=FALSE, fig.cap="Washington State Drinking Water Systems Fluoride Pairs Plot with Log Scale"}
+pairs(nat.fl[4:6], panel = panel.smooth, log="xy")
+```
+
+It appears that the untreated water systems serving larger residential 
+populations might have lower natural fluoride levels. Let's look at that a
+little closer. We'll use `qplot`, which is the simpler interface to the 
+`ggplot2` package.
+
+```{r WA-Water-Systems-Scatter-Plot0, cache=FALSE, fig.cap="Washington State Drinking Water Systems Fluoride Scatter Plot", warning=FALSE}
+qplot(ResPop, mgL, data=nat.fl, geom=c("point", "smooth"), method="lm", 
+      facets=~OwnerTypeDesc, log = "xy")
+```
+
+The [special district](http://mrsc.org/Home/Explore-Topics/Governance/Forms-of-Government-and-Organization/Special-Purpose-Districts-in-Washington.aspx) 
+owner type seems to be the only one showing at least a marginally significant 
+correlation between natural fluoride levels and residential population.
+
+```{r}
+summary(lm(mgL~ResPop+OwnerTypeDesc, data=nat.fl))
+```
+
+Let's zoom in on "special district" water systems with `qplot`.
+
+```{r WA-Water-Systems-Scatter-Plot1, cache=FALSE, fig.cap="Washington State Drinking Water Systems Fluoride Scatter Plot of Special Districts with qplot", fig.height=3, fig.width=5}
+# Filter by "special district" water system owner type
+nat.fl.special <- filter(nat.fl, OwnerTypeDesc=="SPECIAL DISTRICT")
+
+# Plot points with a linear regression line
+qplot(ResPop, mgL, data=nat.fl.special, geom=c("point", "smooth"), method="lm", 
+      log = "xy")
+```
+
+Perhaps the smaller systems are less inclined (or less able) to adjust fluoride 
+levels. We see there are two in particular with very high fluoride and very low 
+population.
+
+Incidentally, we can make this same plot with `ggplot`, the more advanced 
+interface to the `ggplot2` package.
+
+```{r WA-Water-Systems-Scatter-Plot2, cache=FALSE, fig.cap="Washington State Drinking Water Systems Fluoride Scatter Plot of Special Districts with ggplot", fig.height=3, fig.width=5}
+ggplot(nat.fl.special, aes(ResPop, mgL)) + geom_point() + 
+    geom_smooth(method="lm") + scale_x_log10() + scale_y_log10()
+```
+
+Let's take a look at those top-2 highest-fluoride "special district" water systems.
+
+```{r}
+nat.fl.special %>% select(SystemName, mgL, ResPop) %>% arrange(desc(mgL)) %>% head(2)
+```
+
+So, the two "special district" water systems with the highest fluoride 
+concentrations serve just a few residential users. What other systems have high
+natural fluoride? How high is "too high"?
+
+## Untreated Fluoride Levels over EPA MCL
+
+The [US EPA](http://water.epa.gov/drink/contaminants/basicinformation/fluoride.cfm#four)'s 
+MCLG (maximum contaminant level goal) of 4 mg/L. This is also the level of the 
+EPA's enforceable MCL (maximum contaminant level).
+
+Which systems are over the EPA MCL of 4 mg/L?
+
+```{r}
+nat.fl.over <- filter(nat.fl, mgL > 4)
+nat.fl.over[order(nat.fl.over$mgL), 
+            c("SystemName", "OwnerTypeDesc", "ResPop", "mgL")]
+```
+
+One of the highest levels (9.39 mg/L) is at 
+[Paterson Elementary School](http://www.patersonschool.org/). That's over twice 
+the EPA's regulatory limit of 4 mg/L. Looking at the 
+[ResPop](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/DataDownload/DataTerms) column, the table lists the population as 2, 
+yet the school's population of students is over 100 according to Washington 
+[OSPI](http://reportcard.ospi.k12.wa.us/summary.aspx?schoolId=368&OrgType=4&reportLevel=School). 
+What are the school's water sources?
+
+```{r}
+sources[sources$SystemName=="PATERSON ELEMENTARY SCHOOL", 
+        c("SystemName", "Src_Name", "TrObjective", "TrProcss")]
+```
+
+It looks like there is no treatment information available about those two wells.
+
+Let's plot the water systems with fluoride levels over the EPA MCL as a simple 
+bar plot with `ggplot`, using the `theme_light` theme, coloring by system owner 
+type, and flipping the coordinates to accommodate the long water system names.
+
+```{r, WA-Water-Systems-over-EPA-MCL, cache=FALSE, fig.cap="Washington State Drinking Water Systems Exceeding EPA Fluoride MCL of 4 mg/L", fig.height=3, fig.width=7}
+ggplot(nat.fl.over, aes(x=SystemName, y=mgL, fill=OwnerTypeDesc)) + coord_flip() +
+    geom_bar(stat="identity", colour="black", binwidth=1) +  
+    ggtitle(paste("Washington State Drinking Water Systems",
+                  "Exceeding EPA MCL of 4 mg/L", sep="\n")) +
+    theme(axis.text.y = element_text(hjust = 1, size=10)) + theme_light() +
+    labs(y="Fluoride Level (mg/L)", x=NULL)+ scale_fill_brewer(palette="Set2")
+```
+
+### Box Plots
+
+Here is a basic boxplot of the fluoride level (concentration in mg/L) by water 
+system owner type description (OwnerTypeDesc).
 
 ```{r WA-Water-Systems-By-owner-Type-Base-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Make a basic boxplot of mgL by Water System Owner Type
@@ -130,8 +254,8 @@ par(cex.axis=.55)
 boxplot(mgL~OwnerTypeDesc, data=nat.fl)
 ```
 
-As there is a lot of spread at the higher fluoride levels, we'll try using a log
-scale for the y-axis.
+As there is a lot of spread at the higher fluoride levels, we'll try again using 
+a log scale for the y-axis.
 
 ```{r WA-Water-Systems-By-owner-Type-Base-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Make a basic boxplot of mgL by Water System Owner Type
@@ -143,7 +267,7 @@ As an alternative to the standard "base" plotting in R, we can use the `lattice`
 plotting system. Here is a boxplot faceted by residental population groups
 served by the water systems.
 
-```{r WA-Water-Systems-By-owner-Type-Lattice-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+```{r WA-Water-Systems-By-owner-Type-Lattice-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type Lattice Box Plot"}
 bwplot(nat.fl$mgL~nat.fl$OwnerTypeDesc|nat.fl$Population,
         ylab="log(Fluoride Level)", xlab="Water System Owner Type", log="y",
         main="Fluoride Level by Water System Owner Type and Population",
@@ -154,7 +278,7 @@ Next, let's swap the axes and try a different layout. We'll also use the
 `with` function so we don't have to keep repeating the name of the data.frame 
 when we refer to column names.
 
-```{r WA-Water-Systems-By-owner-Type-Lattice-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+```{r WA-Water-Systems-By-owner-Type-Lattice-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type Lattice Box Plot"}
 with(nat.fl, bwplot(OwnerTypeDesc~mgL|Population,
         xlab="log(Fluoride Level)", ylab="Water System Owner Type", log="x",
         main="Fluoride Level by Water System Owner Type and Population",
@@ -162,38 +286,48 @@ with(nat.fl, bwplot(OwnerTypeDesc~mgL|Population,
 ```
 
 One of the most popular plotting systems in R is the versatile `ggplot2` 
-package, which will be used for the rest of the plots in this document.
+package, which we used earlier with scatter and bar plots. The rest of the plots 
+in this document will be created with `ggplot`.
 
-Here is a facetted plot like the previous one (2x2), without the coordinate 
-swap, and this time made using the `ggplot` function.
+Here is a [faceted](http://www.cookbook-r.com/Graphs/Facets_%28ggplot2%29/) 
+plot like the previous one (2x2), without the coordinate swap, and this time 
+made using the `ggplot` function.
 
-```{r WA-Water-Systems-By-owner-Type-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+```{r WA-Water-Systems-By-owner-Type-Box0, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type faceted Box Plot with ggplot"}
 # Use light theme, 45-degre x-axis lables, smaller outlier dots, and 2x2 facet
-ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) + 
+ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + scale_y_log10() +
     facet_wrap(~Population) +
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
         x="Water System Owner Type", y = "log(Fluoride Level)") +
-        theme_light()  + 
+        theme_light() + 
     theme(axis.text.x = element_text(size=8, angle=45, hjust=1, vjust=1)) +
     geom_boxplot(outlier.size=1)
 ```
 
 Let's start over again with the basic boxplot. We will store the essential 
-parameters of this next plot to build upon as we add more features to the plot. 
+parameters of this next plot to build upon later as we add more features to the 
+plot. For the sake of tidiness, order the boxplots by increasing median levels.
 
-```{r WA-Water-Systems-By-owner-Type-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
+```{r WA-Water-Systems-By-owner-Type-Box1, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type Basic Box Plot with ggplot"}
+# Reorder by median fluoride level (boxplot center)
+nat.fl <- group_by(nat.fl, OwnerTypeDesc)
+owner.levels <- summarise(nat.fl, median.mgL.by.owner=median(mgL)) %>% 
+    arrange(median.mgL.by.owner) %>% select(OwnerTypeDesc)
+nat.fl$OwnerTypeDesc <- factor(nat.fl$OwnerTypeDesc, levels=owner.levels$OwnerTypeDesc)
+
 # Use light theme, smaller x-asis lables, and use smaller outlier dots
-plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=log(mgL))) + 
+plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + scale_y_log10() +
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
         x="Water System Owner Type", y = "log(Fluoride Level)") +
-        theme_light() + coord_equal() + theme(axis.text.x = element_text(size=7))
+        theme_light() + theme(axis.text.x = element_text(size=10, 
+                                                         angle=20, vjust=.6))
 
 plot + geom_boxplot(outlier.size=1)
 ```
 
-We can use color instead of facetting to represent the population groups.
+We can use color instead of faceting to represent the population groups.
 
 We'll also add data points with jitter and remove the (now redundant) black 
 outlier dots.
@@ -204,7 +338,7 @@ plot <- plot + geom_jitter(size=3, alpha=0.4,
     position = position_jitter(width = 0.05), aes(color=Population)) +
     scale_color_manual(values=c("darkblue", "darkgreen", "darkorange", "darkred"))
 
-plot + geom_boxplot(alpha=0.5, outlier.size=0)
+plot + geom_boxplot(alpha=0, outlier.size=0)
 ```
 
 Add a light-green horizontal band to show the optimal fluoride level range and 
@@ -213,29 +347,25 @@ add a label for it.
 ```{r WA-Water-Systems-By-owner-Type-Box3, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Add a rectangle for the optimal fluoride level range and a label for it
 plot <- plot + geom_rect(data=nat.fl[1,], 
-              aes(ymin=log(.8), ymax=log(1.3), xmin=0, xmax=Inf), 
+              aes(ymin=.8, ymax=1.3, xmin=0, xmax=Inf), 
               fill="green", alpha=.2, label="Optimal Fluoridation") + 
-    geom_text(aes(8, 0, label="WA.Optimal", group=NULL), size = 4, 
-        color = "darkgreen", data=nat.fl[1,], parse = T)
+    annotate("text", x=.74, y=1.15, label="WA Optimal", size = 4, color = "darkgreen")
 
-plot + geom_boxplot(alpha=0.5, outlier.size=0)
+plot + geom_boxplot(alpha=0, outlier.size=0)
 ```
 
 Add lines (and labels) for the various US HHS and EPA levels.
 
 ```{r WA-Water-Systems-By-owner-Type-Box4, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Add lines (and labels) for the various US HHS and EPA levels
-plot <- plot + geom_hline(aes(yintercept=log(0.7), alpha=.5), color = "darkgreen") + 
-    geom_text(aes(8, -.5, label="HHS.2015", group=NULL), size = 4, 
-        color = "darkgreen", data=nat.fl[1,], parse = T) +
-    geom_hline(aes(yintercept=log(2), alpha=.5), color = "darkorange") + 
-    geom_text(aes(8, 0.8, label="EPA.SMCL", group=NULL), size = 4, 
-        color = "darkorange", data=nat.fl[1,], parse = T) +
-    geom_hline(aes(yintercept=log(4), alpha=.5), color = "darkred") + 
-    geom_text(aes(8, 1.5, label="EPA.MCL", group=NULL), size = 4, 
-        color = "darkred", data=nat.fl[1,], parse = T)
+plot <- plot + geom_hline(aes(yintercept=0.7, alpha=.5), color = "darkgreen") +
+    annotate("text", x=.65, y=.6, label="HHS 2015", size = 4, color = "darkgreen") +
+    geom_hline(aes(yintercept=2, alpha=.5), color = "darkorange") + 
+    annotate("text", x=.73, y=1.8, label="EPA SMCL", size = 4, color = "darkorange") +
+    geom_hline(aes(yintercept=4, alpha=.5), color = "darkred") + 
+    annotate("text", x=.65, y=3.6, label="EPA MCL", size = 4, color = "darkred")
 
-plot + geom_boxplot(alpha=0.5, outlier.size=0)
+plot + geom_boxplot(alpha=0, outlier.size=0)
 ```
 
 ## Violin Plot of Natural Fluoride Levels
@@ -247,15 +377,15 @@ see density differences where the dots overlap.
 
 ```{r WA-Water-Systems-By-owner-Type, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Make the violin plot
-plot + geom_violin(alpha=0.3)
+plot + geom_violin(alpha=0)
 ```
 
-The colors indicate the size of the population served by the water system. 
-The width of the shapes vary according to the density of points plotted at a 
-given fluoride level. 
+The colors indicate the size of the population served by the water system. The 
+width of the shapes vary according to the density of points plotted at a given 
+fluoride level. 
 
-The light green band shows Washington's range of "optimal" 
-fluoride levels (0.8 to 1.3 mg/L). The green line marks the new (April, 2015) 
+The light green band shows Washington's range of "optimal" fluoride levels (0.8 
+to 1.3 mg/L). The green line marks the new (April, 2015) 
 [US HHS](http://www.hhs.gov/news/press/2015pres/04/20150427a.html) 
 [recommended](http://www.cdc.gov/fluoridation/faqs/) level of 0.7 mg/L. 
 
@@ -263,61 +393,29 @@ The red line marks the level of the
 [US EPA](http://water.epa.gov/drink/contaminants/basicinformation/fluoride.cfm#four)'s 
 MCLG (maximum contaminant level goal) of 4 mg/L. This is also the level of the 
 EPA's enforceable MCL (maximum contaminant level). The orange line marks the 
-level of the [US EPA](http://water.epa.gov/drink/contaminants/basicinformation/fluoride.cfm#four)'s SMCL (secondary standard) of 2 mg/L, a non-enforceable 
-guideline. 
+level of the [US EPA](http://water.epa.gov/drink/contaminants/basicinformation/fluoride.cfm#four)'s 
+SMCL (secondary standard) of 2 mg/L, a non-enforceable guideline. 
 
 For completeness, we'll add a footnote referencing the data sources.
 
 ```{r WA-Water-Systems-By-owner-Type-with-Attribution, cache=FALSE, fig.cap="Washington State Drinking Water Systems by Owner Type"}
 # Make the violin plot with data source attribution
 
-plot <- plot + geom_violin(alpha=0.3)
+plot <- plot + geom_violin(alpha=0)
 
 data.src <- paste0(collapse = ' ', c('Data sources:', 
-                    'Washington State DOH (www.doh.wa.gov),', 
-                    'US EPA (water.epa.gov),',
-                    'and US HHS (www.hhs.gov)'))
+                    'WA DOH (www.doh.wa.gov),', 
+                    'US EPA (water.epa.gov)',
+                    'and HHS (www.hhs.gov)'))
 gplot <- arrangeGrob(plot, sub = textGrob(data.src, x=0, hjust=-0.1, vjust=0.1,
-                   gp = gpar(fontface="italic",fontsize=10)))
+                   gp = gpar(fontface="italic", fontsize=10)))
 gplot
 ```
 
-## Water Systems Fluoride over EPA MCL
-
-Which systems are over the EPA MCL (maximum contaminant level) enforceable 
-regulatory limit of 4 mg/L?
-
-```{r}
-nat.fl.over <- filter(nat.fl, mgL > 4)
-nat.fl.over[order(nat.fl.over$mgL), c("SystemName", "OwnerTypeDesc", "ResPop", "mgL")]
-```
-
-One of the highest levels is PATERSON ELEMENTARY SCHOOL at 9.39 mg/L. That's over 
-twice the EPA's regulatory limit of 4 mg/L. Looking at the 
-[ResPop](http://www.doh.wa.gov/DataandStatisticalReports/EnvironmentalHealth/DrinkingWaterSystemData/DataDownload/DataTerms) column, the table lists the population as 2, 
-yet the school's population of students is over 100 according to Washington 
-[OSPI](http://reportcard.ospi.k12.wa.us/summary.aspx?schoolId=368&OrgType=4&reportLevel=School). What are the school's water sources?
-
-```{r}
-sources[sources$SystemName=="PATERSON ELEMENTARY SCHOOL", 
-        c("SystemName", "Src_Name", "TrObjective", "TrProcss")]
-```
-
-It looks like there is no treatment information available about those two wells.
-
-Let's plot the water systems with fluoride levels over the EPA MCL as a simple 
-bar plot, using the `theme_classic` theme.
-
-```{r, WA-Water-Systems-over-EPA-MCL, cache=FALSE, fig.cap="Washington State Drinking Water Systems Exceeding EPA MCL of 4 mg/L", fig.height=3, fig.width=7}
-ggplot(nat.fl.over, aes(x=SystemName, y=mgL)) + coord_flip() +
-    geom_bar(stat="identity", colour="darkred", fill="darkred", binwidth=1) +  
-    ggtitle(paste("Washington State Drinking Water Systems",
-                  "Exceeding EPA MCL of 4 mg/L", sep="\n")) +
-    theme(axis.text.y = element_text(hjust = 1, size=10)) + theme_classic() +
-    labs(y="Fluoride Level (mg/L)", x=NULL)
-```
-
 ## Prepare Map Data
+
+Before we plot the water systems on a map, we will need to get a state map with
+county names and boundaries.
 
 Prepare the map `data.frame` using the `map_data` function from the `ggplot2`
 package.
@@ -367,8 +465,12 @@ Make a map of populations Served by Drinking Water Systems with natural
 fluoride levels above Washington State's "optimal" range of 0.8 - 1.3 mg/L.
 
 ```{r WA-Natural-Fluoride-Over, cache=FALSE, fig.cap="Washington State Natural Fluoride Levels Over Optimal Range"}
+# Subset the data
+nat.fl.high <- nat.fl[nat.fl$mgL>1.3,]
+nat.fl.high <- nat.fl.high[complete.cases(nat.fl.high),]
+
 # Make the map
-wamap + geom_point(data=nat.fl.high, inherit.aes=F, 
+wamap + geom_point(data=nat.fl.high, inherit.aes=FALSE, 
                aes(x=lon, y=lat, size=Population), colour="darkred", alpha=.3) +
         scale_size_manual(values = seq(3, 12, by=2)) +
     guides(colour = guide_legend(override.aes = list(size=5))) + 
@@ -383,9 +485,9 @@ wamap + geom_point(data=nat.fl.high, inherit.aes=F,
 Make a map of populations served by non-fluoridated water systems with natural 
 fluoride levels.
 
-```{r WA-Natural-Fluoride, cache=FALSE, fig.cap="Washington State Natural Fluoride Water Systems"}
+```{r WA-Natural-Fluoride, cache=FALSE, fig.cap="Washington State Untreated Fluoride Water Systems"}
 # Make the map
-wamap + geom_point(data=nat.fl, inherit.aes=F, 
+wamap + geom_point(data=nat.fl, inherit.aes=FALSE, 
             aes(x=lon, y=lat, group=F.Level, color=F.Level, size=Population, 
                 fill=F.Level), 
         position=position_jitterdodge(jitter.width=0.1, dodge.width=0.1), 
@@ -395,7 +497,7 @@ wamap + geom_point(data=nat.fl, inherit.aes=F,
     guides(colour = guide_legend(override.aes = list(size=5))) + 
     ggtitle(label = paste("Washington Populations Served by Drinking Water Systems",
                           "with Natural (Untreated) Fluoride Levels", 
-                          "Relative to Washington State's",
+                          "Colored Relative to Washington State's",
                           "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
 ```
 
@@ -424,7 +526,7 @@ wamap + geom_point(data=fl.opt, inherit.aes=F,
     scale_color_manual(values=c("darkred", "darkgreen")) +
     guides(colour = guide_legend(override.aes = list(size=5))) + 
     ggtitle(label = paste("Washington Populations Served by Drinking Water Systems",
-                          "with Fluoride Levels Relative to Washington State's",
+                          "with Fluoride Levels Colored Relative to Washington State's",
                           "\"Optimal\" Range (0.8 - 1.3 mg/L)", sep="\n"))
 ```
 
@@ -433,7 +535,7 @@ wamap + geom_point(data=fl.opt, inherit.aes=F,
 Make a map of populations Served by Drinking Water Systems with natural or treated 
 fluoride levels relative to US HHS ("Health Department") and US EPA guidelines.
 
-```{r WA-Fluoride-US-Rec, cache=FALSE, fig.cap="Washington State Fluoride Levels Relative to US Recommendations and Regulations"}
+```{r WA-Fluoride-US-Rec, cache=FALSE, fig.cap="Washington State Fluoride Levels Colored Relative to US Recommendations and Regulations"}
 # Assign US.F.Level based on fluoride concentrations (mgL)
 fl$US.F.Level <- cut(fl$mgL, c(-Inf, 0, .7, 2, 4, Inf), 
             labels=c("Unknown", "< HHS .7", "< EPA 2", "< EPA 4", "> EPA 4"))
@@ -448,16 +550,19 @@ fl.us <- select(fl, County, PWSID, SystemName, ResPop, OwnerTypeDesc,
 fl.us <- fl[complete.cases(fl.us),] # This removes the "Unknown" group
 
 # Make the map
-wamap + geom_point(data=fl.us, inherit.aes=F, 
-            aes(x=lon, y=lat, group=US.F.Level, color=US.F.Level, 
-                size=Population, fill=US.F.Level), 
-        position=position_jitterdodge(jitter.width=0.1, dodge.width=0.1), 
-        alpha=.3) + scale_shape_discrete(solid=T) + 
+wamap <- wamap + geom_point(data=fl.us, inherit.aes=FALSE, 
+                aes(x=lon, y=lat, group=US.F.Level, color=US.F.Level, 
+                    size=Population, fill=US.F.Level), 
+                position=position_jitterdodge(jitter.width=0.1, dodge.width=0.1), 
+        alpha=.3) + scale_shape_discrete(solid=TRUE) + 
     scale_size_manual(values = seq(3, 12, by=2)) +
     scale_color_manual(values=c("blue", "darkgreen", "darkorange", "darkred")) +
     guides(colour = guide_legend(override.aes = list(size=5))) + 
     ggtitle(label = paste("Washington Populations Served by Drinking Water Systems",
-                          "with Fluoride Levels Relative to",
+                          "with Fluoride Levels Colored Relative to",
                           "US HHS Recommendations and US EPA Standards", 
                           sep="\n"))
+gmap <- arrangeGrob(wamap, sub = textGrob(data.src, x=0, hjust=-0.1, vjust=0.1,
+                   gp = gpar(fontface="italic", fontsize=10)))
+gmap
 ```
