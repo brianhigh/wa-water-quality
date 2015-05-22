@@ -64,7 +64,7 @@ Configure `knitr` options.
 
 
 ```r
-opts_chunk$set(tidy=FALSE, cache=TRUE)
+opts_chunk$set(tidy=FALSE, cache=FALSE)
 ```
 
 Create the data folder, if necessary.
@@ -386,7 +386,7 @@ made using the `ggplot` function.
 
 ```r
 # Use light theme, 45-degre x-axis lables, smaller outlier dots, and 2x2 facet
-ggplot(nat.fl, aes(x=OwnerTypeDesc, y=LmgL)) +
+ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + scale_y_log10() +
     facet_wrap(~Population) +
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
@@ -411,7 +411,7 @@ owner.levels <- summarise(nat.fl, median.mgL.by.owner=median(mgL)) %>%
 nat.fl$OwnerTypeDesc <- factor(nat.fl$OwnerTypeDesc, levels=owner.levels$OwnerTypeDesc)
 
 # Use light theme, smaller x-asis lables, and use smaller outlier dots
-plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=LmgL)) +
+plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + scale_y_log10() + 
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
         x="Water System Owner Type", y = "log(Fluoride Level)") +
