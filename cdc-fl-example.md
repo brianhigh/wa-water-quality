@@ -67,15 +67,15 @@ G3 <- gvisGeoChart(cdcfl, "State", "Percent",
 plot(G3)
 ```
 
-<!-- GeoChart generated in R 3.1.2 by googleVis 0.5.8 package -->
-<!-- Thu May 21 22:11:21 2015 -->
+<!-- GeoChart generated in R 3.2.0 by googleVis 0.5.8 package -->
+<!-- Thu May 21 22:54:54 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataGeoChartID1004366058f7 () {
+function gvisDataGeoChartID563be1c6999 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -291,8 +291,8 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartGeoChartID1004366058f7() {
-var data = gvisDataGeoChartID1004366058f7();
+function drawChartGeoChartID563be1c6999() {
+var data = gvisDataGeoChartID563be1c6999();
 var options = {};
 options["width"] =    600;
 options["height"] =    400;
@@ -301,7 +301,7 @@ options["displayMode"] = "regions";
 options["resolution"] = "provinces";
 
     var chart = new google.visualization.GeoChart(
-    document.getElementById('GeoChartID1004366058f7')
+    document.getElementById('GeoChartID563be1c6999')
     );
     chart.draw(data,options);
     
@@ -325,9 +325,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartGeoChartID1004366058f7);
+callbacks.push(drawChartGeoChartID563be1c6999);
 })();
-function displayChartGeoChartID1004366058f7() {
+function displayChartGeoChartID563be1c6999() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -351,11 +351,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID1004366058f7"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID563be1c6999"></script>
  
 <!-- divChart -->
   
-<div id="GeoChartID1004366058f7" 
+<div id="GeoChartID563be1c6999" 
   style="width: 600; height: 400;">
 </div>
 

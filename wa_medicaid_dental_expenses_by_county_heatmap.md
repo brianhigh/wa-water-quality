@@ -193,7 +193,7 @@ data.src <- paste0(collapse = ' ', c('Data sources:',
 
 # Layout map with source attribution string at bottom of plot area
 gmap <- arrangeGrob(gmap, sub = textGrob(data.src, x=0, hjust=-.1, vjust=0.1,
-                                 gp = gpar(fontface="italic", fontsize=12)))
+                                 gp = gpar(fontface="italic", fontsize=10)))
 gmap
 ```
 
