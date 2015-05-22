@@ -174,40 +174,43 @@ qplot(ResPop, mgL, data=nat.fl, geom=c("point", "smooth"), method="lm",
 ![Washington State Drinking Water Systems Fluoride Scatter Plot](data_exploration_files/figure-html/WA-Water-Systems-Scatter-Plot0-1.png) 
 
 The [special district](http://mrsc.org/Home/Explore-Topics/Governance/Forms-of-Government-and-Organization/Special-Purpose-Districts-in-Washington.aspx) 
-owner type seems to be the only one showing at least a marginally significant 
-correlation between natural fluoride levels and residential population.
+owner type seems to be the only one showing at least a marginal trend between 
+natural fluoride levels and residential population.
 
 
 ```r
-summary(lm(mgL~ResPop+OwnerTypeDesc, data=nat.fl))
+# Take the log10() of the variables of interest end produce a log-log summary
+nat.fl$LmgL <- log10(nat.fl$mgL)
+nat.fl$LResPop <- log10(nat.fl$ResPop)
+summary(lm(LmgL~LResPop+OwnerTypeDesc, data=nat.fl))
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = mgL ~ ResPop + OwnerTypeDesc, data = nat.fl)
+## lm(formula = LmgL ~ LResPop + OwnerTypeDesc, data = nat.fl)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -0.9206 -0.4278 -0.2894  0.0380  8.6689 
+##      Min       1Q   Median       3Q      Max 
+## -0.27222 -0.14688 -0.06224  0.07696  1.01417 
 ## 
 ## Coefficients:
-##                                 Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)                    1.028e+00  1.237e-01   8.312 3.03e-15 ***
-## ResPop                        -1.250e-06  1.311e-05  -0.095   0.9241    
-## OwnerTypeDescCITY/TOWN        -1.749e-02  1.964e-01  -0.089   0.9291    
-## OwnerTypeDescCOUNTY            4.252e-01  5.835e-01   0.729   0.4667    
-## OwnerTypeDescFEDERAL          -2.378e-01  5.834e-01  -0.408   0.6838    
-## OwnerTypeDescINVESTOR          1.933e-01  1.791e-01   1.079   0.2815    
-## OwnerTypeDescPRIVATE           8.535e-02  1.549e-01   0.551   0.5820    
-## OwnerTypeDescSPECIAL DISTRICT  4.929e-01  2.280e-01   2.162   0.0314 *  
-## OwnerTypeDescSTATE            -3.283e-02  7.092e-01  -0.046   0.9631    
+##                                 Estimate Std. Error t value Pr(>|t|)  
+## (Intercept)                   -0.0302415  0.0399915  -0.756   0.4501  
+## LResPop                       -0.0031847  0.0169949  -0.187   0.8515  
+## OwnerTypeDescCITY/TOWN        -0.0001291  0.0492157  -0.003   0.9979  
+## OwnerTypeDescCOUNTY            0.1439772  0.1285041   1.120   0.2634  
+## OwnerTypeDescFEDERAL          -0.0737953  0.1299786  -0.568   0.5706  
+## OwnerTypeDescINVESTOR          0.0139625  0.0395117   0.353   0.7240  
+## OwnerTypeDescPRIVATE           0.0184271  0.0357609   0.515   0.6067  
+## OwnerTypeDescSPECIAL DISTRICT  0.0872353  0.0510692   1.708   0.0886 .
+## OwnerTypeDescSTATE             0.0095953  0.1566532   0.061   0.9512  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9876 on 309 degrees of freedom
-## Multiple R-squared:  0.02182,	Adjusted R-squared:  -0.003504 
-## F-statistic: 0.8616 on 8 and 309 DF,  p-value: 0.5493
+## Residual standard error: 0.2173 on 309 degrees of freedom
+## Multiple R-squared:  0.01629,	Adjusted R-squared:  -0.009174 
+## F-statistic: 0.6398 on 8 and 309 DF,  p-value: 0.7441
 ```
 
 Let's zoom in on "special district" water systems with `qplot`.
@@ -218,8 +221,7 @@ Let's zoom in on "special district" water systems with `qplot`.
 nat.fl.special <- filter(nat.fl, OwnerTypeDesc=="SPECIAL DISTRICT")
 
 # Plot points with a linear regression line
-qplot(ResPop, mgL, data=nat.fl.special, geom=c("point", "smooth"), method="lm", 
-      log = "xy")
+qplot(LResPop, LmgL, data=nat.fl.special, geom=c("point", "smooth"), method="lm")
 ```
 
 ![Washington State Drinking Water Systems Fluoride Scatter Plot of Special Districts with qplot](data_exploration_files/figure-html/WA-Water-Systems-Scatter-Plot1-1.png) 
@@ -233,8 +235,7 @@ interface to the `ggplot2` package.
 
 
 ```r
-ggplot(nat.fl.special, aes(ResPop, mgL)) + geom_point() + 
-    geom_smooth(method="lm") + scale_x_log10() + scale_y_log10()
+ggplot(nat.fl.special, aes(LResPop, LmgL)) + geom_point() + geom_smooth(method="lm") 
 ```
 
 ![Washington State Drinking Water Systems Fluoride Scatter Plot of Special Districts with ggplot](data_exploration_files/figure-html/WA-Water-Systems-Scatter-Plot2-1.png) 
@@ -341,7 +342,7 @@ a log scale for the y-axis.
 ```r
 # Make a basic boxplot of mgL by Water System Owner Type
 par(cex.axis=.55)
-boxplot(mgL~OwnerTypeDesc, data=nat.fl, log="y")
+boxplot(LmgL~OwnerTypeDesc, data=nat.fl)
 ```
 
 ![Washington State Drinking Water Systems by Owner Type](data_exploration_files/figure-html/WA-Water-Systems-By-owner-Type-Base-Box1-1.png) 
@@ -352,8 +353,8 @@ served by the water systems.
 
 
 ```r
-bwplot(nat.fl$mgL~nat.fl$OwnerTypeDesc|nat.fl$Population,
-        ylab="log(Fluoride Level)", xlab="Water System Owner Type", log="y",
+bwplot(nat.fl$LmgL~nat.fl$OwnerTypeDesc|nat.fl$Population,
+        ylab="log(Fluoride Level)", xlab="Water System Owner Type",
         main="Fluoride Level by Water System Owner Type and Population",
         layout=(c(1,4)))
 ```
@@ -366,8 +367,8 @@ when we refer to column names.
 
 
 ```r
-with(nat.fl, bwplot(OwnerTypeDesc~mgL|Population,
-        xlab="log(Fluoride Level)", ylab="Water System Owner Type", log="x",
+with(nat.fl, bwplot(OwnerTypeDesc~LmgL|Population,
+        xlab="log(Fluoride Level)", ylab="Water System Owner Type",
         main="Fluoride Level by Water System Owner Type and Population",
         layout=(c(2,2))))
 ```
@@ -385,7 +386,7 @@ made using the `ggplot` function.
 
 ```r
 # Use light theme, 45-degre x-axis lables, smaller outlier dots, and 2x2 facet
-ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + scale_y_log10() +
+ggplot(nat.fl, aes(x=OwnerTypeDesc, y=LmgL)) +
     facet_wrap(~Population) +
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
@@ -410,7 +411,7 @@ owner.levels <- summarise(nat.fl, median.mgL.by.owner=median(mgL)) %>%
 nat.fl$OwnerTypeDesc <- factor(nat.fl$OwnerTypeDesc, levels=owner.levels$OwnerTypeDesc)
 
 # Use light theme, smaller x-asis lables, and use smaller outlier dots
-plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=mgL)) + scale_y_log10() +
+plot <- ggplot(nat.fl, aes(x=OwnerTypeDesc, y=LmgL)) +
     labs(title=paste("Natural Fluoride Levels", "in Washington Water Sources", 
                      "by Water System Owner Type", sep="\n"), 
         x="Water System Owner Type", y = "log(Fluoride Level)") +
