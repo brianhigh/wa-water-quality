@@ -35,7 +35,7 @@ if (file.exists(cdcfile)) {
     # Read data from CSV
     cdcfl <- read.csv(file = cdcfile, header = TRUE)
 } else {
-    # Scrape from CDC web page and save as CSV for later
+    # Scrape table from CDC web page and save as CSV for later
     library(XML)
     cdcflweb<-readHTMLTable("http://www.cdc.gov/fluoridation/statistics/2012stats.htm")
     cdcfl <- cdcflweb[[2]][3:53, c(1,4)]
@@ -60,7 +60,6 @@ cdcfl$Percent <- as.numeric(sub("%", "", cdcfl$Percent))
 op <- options(gvis.plot.tag='chart')
 
 # Create gvisGeoChart
-suppressPackageStartupMessages(library(googleVis))
 G3 <- gvisGeoChart(cdcfl, "State", "Percent",
                     options=list(region="US", displayMode="regions",
                                  resolution="provinces",

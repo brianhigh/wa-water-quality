@@ -32,7 +32,7 @@ if (file.exists(cdcfile)) {
     # Read data from CSV
     cdcfl <- read.csv(file = cdcfile, header = TRUE)
 } else {
-    # Scrape from CDC web page and save as CSV for later
+    # Scrape table from CDC web page and save as CSV for later
     library(XML)
     cdcflweb<-readHTMLTable("http://www.cdc.gov/fluoridation/statistics/2012stats.htm")
     cdcfl <- cdcflweb[[2]][3:53, c(1,4)]
@@ -59,7 +59,6 @@ cdcfl$Percent <- as.numeric(sub("%", "", cdcfl$Percent))
 op <- options(gvis.plot.tag='chart')
 
 # Create gvisGeoChart
-suppressPackageStartupMessages(library(googleVis))
 G3 <- gvisGeoChart(cdcfl, "State", "Percent",
                     options=list(region="US", displayMode="regions",
                                  resolution="provinces",
@@ -67,15 +66,15 @@ G3 <- gvisGeoChart(cdcfl, "State", "Percent",
 plot(G3)
 ```
 
-<!-- GeoChart generated in R 3.2.0 by googleVis 0.5.8 package -->
-<!-- Thu May 21 22:54:54 2015 -->
+<!-- GeoChart generated in R 3.1.2 by googleVis 0.5.8 package -->
+<!-- Thu May 21 23:17:41 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataGeoChartID563be1c6999 () {
+function gvisDataGeoChartIDc587681bbc () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -291,8 +290,8 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartGeoChartID563be1c6999() {
-var data = gvisDataGeoChartID563be1c6999();
+function drawChartGeoChartIDc587681bbc() {
+var data = gvisDataGeoChartIDc587681bbc();
 var options = {};
 options["width"] =    600;
 options["height"] =    400;
@@ -301,7 +300,7 @@ options["displayMode"] = "regions";
 options["resolution"] = "provinces";
 
     var chart = new google.visualization.GeoChart(
-    document.getElementById('GeoChartID563be1c6999')
+    document.getElementById('GeoChartIDc587681bbc')
     );
     chart.draw(data,options);
     
@@ -325,9 +324,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartGeoChartID563be1c6999);
+callbacks.push(drawChartGeoChartIDc587681bbc);
 })();
-function displayChartGeoChartID563be1c6999() {
+function displayChartGeoChartIDc587681bbc() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -351,11 +350,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID563be1c6999"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartIDc587681bbc"></script>
  
 <!-- divChart -->
   
-<div id="GeoChartID563be1c6999" 
+<div id="GeoChartIDc587681bbc" 
   style="width: 600; height: 400;">
 </div>
 
