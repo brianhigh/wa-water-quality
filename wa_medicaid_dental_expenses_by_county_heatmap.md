@@ -46,7 +46,8 @@ Load the required R packages.
 
 
 ```r
-for (pkg in c("knitr", "XLConnect", "maptools", "ggplot2", "scales", "gridExtra")) {
+for (pkg in c("knitr", "XLConnect", "rgeos", "maptools", "ggplot2", "scales", 
+              "gridExtra")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -155,10 +156,11 @@ expenses <- data.frame(county=dent.cnty$Col1, FY2014=dent.exp$Col1,
                        stringsAsFactors = FALSE)
 ```
 
-# Create Map
+## Create the Map
 
 
 ```r
+# Create a custom theme from theme_classic
 theme_bare <- function(...) {
     theme_classic() + 
     theme(axis.line=element_blank(),
@@ -169,8 +171,9 @@ theme_bare <- function(...) {
           axis.title.y=element_blank())
 }
 
-# Map of Washington State Medicaid dental expenses
+# Map Washington State Medicaid dental expenses by county
 wa <- fortify(wa, region="NAME_2")
+
 gmap <- ggplot() + geom_map(data=expenses, aes(map_id=county, fill=FY2014),
                     color="darkgreen", map=wa) + 
     expand_limits(x=wa$long, y=wa$lat) + theme_bare() +

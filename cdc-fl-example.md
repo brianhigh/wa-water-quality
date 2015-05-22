@@ -2,6 +2,8 @@
 Brian High  
 05/21/2015  
 
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
 ## Setup
 
 Load the required R packages.
@@ -65,15 +67,15 @@ G3 <- gvisGeoChart(cdcfl, "State", "Percent",
 plot(G3)
 ```
 
-<!-- GeoChart generated in R 3.1.3 by googleVis 0.5.8 package -->
-<!-- Thu May 21 09:40:50 2015 -->
+<!-- GeoChart generated in R 3.1.2 by googleVis 0.5.8 package -->
+<!-- Thu May 21 22:11:21 2015 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataGeoChartID3e466eb333bb () {
+function gvisDataGeoChartID1004366058f7 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -289,8 +291,8 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartGeoChartID3e466eb333bb() {
-var data = gvisDataGeoChartID3e466eb333bb();
+function drawChartGeoChartID1004366058f7() {
+var data = gvisDataGeoChartID1004366058f7();
 var options = {};
 options["width"] =    600;
 options["height"] =    400;
@@ -299,7 +301,7 @@ options["displayMode"] = "regions";
 options["resolution"] = "provinces";
 
     var chart = new google.visualization.GeoChart(
-    document.getElementById('GeoChartID3e466eb333bb')
+    document.getElementById('GeoChartID1004366058f7')
     );
     chart.draw(data,options);
     
@@ -323,9 +325,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartGeoChartID3e466eb333bb);
+callbacks.push(drawChartGeoChartID1004366058f7);
 })();
-function displayChartGeoChartID3e466eb333bb() {
+function displayChartGeoChartID1004366058f7() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -349,11 +351,11 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID3e466eb333bb"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartGeoChartID1004366058f7"></script>
  
 <!-- divChart -->
   
-<div id="GeoChartID3e466eb333bb" 
+<div id="GeoChartID1004366058f7" 
   style="width: 600; height: 400;">
 </div>
 
@@ -366,4 +368,5 @@ options(op)
 
 The HTML output from running `knitr` on the Rmd file (the original version of 
 this document) is a stand-alone web page and can be found on 
-[Brian High's UW website](http://staff.washington.edu/high/fluoridation/cdc-fl-example.html)
+[Brian High's UW website](http://staff.washington.edu/high/fluoridation/cdc-fl-example.html). 
+The RMarkdown [source can be found on GitHub](https://github.com/brianhigh/wa-water-quality/blob/master/wa_medicaid_dental_expenses_by_county_heatmap.Rmd).

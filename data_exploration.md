@@ -60,6 +60,19 @@ for (pkg in c("knitr", "dplyr", "lattice", "ggplot2", "gridExtra", "maps")) {
 }
 ```
 
+```
+## Warning: dependency 'EBImage' is not available
+```
+
+```
+## package 'RGraphics' successfully unpacked and MD5 sums checked
+## package 'pixmap' successfully unpacked and MD5 sums checked
+## package 'gridExtra' successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+## 	C:\Users\brianhigh\AppData\Local\Temp\Rtmp8WBlX2\downloaded_packages
+```
+
 Configure `knitr` options.
 
 
@@ -274,13 +287,13 @@ nat.fl.over[order(nat.fl.over$mgL),
 
 ```
 ##                          SystemName    OwnerTypeDesc ResPop  mgL
-## 6                  WESTBOURNE ACRES         INVESTOR     94 4.10
-## 1                      FROSTY PINES          PRIVATE     24 4.21
-## 7          DALLES WATER ASSOCIATION          PRIVATE     21 4.40
+## 3                  WESTBOURNE ACRES         INVESTOR     94 4.10
+## 7                      FROSTY PINES          PRIVATE     24 4.21
+## 5          DALLES WATER ASSOCIATION          PRIVATE     21 4.40
 ## 4   DODD ROAD INDUSTRIAL PARK WATER SPECIAL DISTRICT      4 4.91
-## 5 HARRISON-RAY-BURBANK WATER SYSTEM         INVESTOR    656 5.20
+## 1 HARRISON-RAY-BURBANK WATER SYSTEM         INVESTOR    656 5.20
 ## 2        PATERSON ELEMENTARY SCHOOL SPECIAL DISTRICT      2 9.39
-## 3       LONG LAKE OPERATORS VILLAGE         INVESTOR      7 9.89
+## 6       LONG LAKE OPERATORS VILLAGE         INVESTOR      7 9.89
 ```
 
 One of the highest levels (9.39 mg/L) is at 

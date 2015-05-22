@@ -7,6 +7,8 @@ output:
         keep_md: yes
 ---
 
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
 ## Setup
 
 Load the required R packages.
@@ -73,4 +75,5 @@ options(op)
 
 The HTML output from running `knitr` on the Rmd file (the original version of 
 this document) is a stand-alone web page and can be found on 
-[Brian High's UW website](http://staff.washington.edu/high/fluoridation/cdc-fl-example.html)
+[Brian High's UW website](http://staff.washington.edu/high/fluoridation/cdc-fl-example.html). 
+The RMarkdown [source can be found on GitHub](https://github.com/brianhigh/wa-water-quality/blob/master/wa_medicaid_dental_expenses_by_county_heatmap.Rmd).

@@ -34,6 +34,19 @@ for (pkg in c("knitr", "hash", "rJava", "XLConnect", "dplyr", "ggmap")) {
 }
 ```
 
+```
+## package 'RJSONIO' successfully unpacked and MD5 sums checked
+## package 'maps' successfully unpacked and MD5 sums checked
+## package 'RgoogleMaps' successfully unpacked and MD5 sums checked
+## package 'png' successfully unpacked and MD5 sums checked
+## package 'mapproj' successfully unpacked and MD5 sums checked
+## package 'geosphere' successfully unpacked and MD5 sums checked
+## package 'ggmap' successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+## 	C:\Users\brianhigh\AppData\Local\Temp\RtmpuChjez\downloaded_packages
+```
+
 Configure `knitr` options.
 
 
@@ -254,9 +267,24 @@ both types of output.
 # Zipped CSV for pypMyAdmin
 ex_csv_zip(systems, paste(c(datadir, '/', filename_prefix, 'systems.csv'), 
                           sep='', collapse=''))
+```
+
+```
+## Warning: running command '"zip" -r9X "data/wa_doh_dw_systems.csv.zip"
+## "data/wa_doh_dw_systems.csv" ' had status 127
+```
+
+```r
 ex_csv_zip(sources, paste(c(datadir, '/', filename_prefix, 'sources.csv'), 
                           sep='', collapse=''))
+```
 
+```
+## Warning: running command '"zip" -r9X "data/wa_doh_dw_sources.csv.zip"
+## "data/wa_doh_dw_sources.csv" ' had status 127
+```
+
+```r
 # TSV for SQLShare
 ex_tsv(systems, paste(c(datadir, '/', filename_prefix, 'systems.tsv'), 
                       sep='', collapse=''))
@@ -378,7 +406,14 @@ both types of output.
 # Export data to Zipped CSV for import into phpMyAdmin
 ex_csv_zip(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.csv'), 
                            sep='', collapse=''))
+```
 
+```
+## Warning: running command '"zip" -r9X "data/wa_doh_dw_fluoride.csv.zip"
+## "data/wa_doh_dw_fluoride.csv" ' had status 127
+```
+
+```r
 # Export data to TSV for import into UW SQLShare
 ex_tsv(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.tsv'), 
                        sep='', collapse=''))
