@@ -1,6 +1,10 @@
 # Water Quality Data Cleanup
 Brian High  
-05/17/2015  
+05/21/2015  
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
+## Objectives
 
 Get drinking water data from [WA DOH](http://www.doh.wa.gov), clean, and 
 convert to CSV and TSV formats for import into a database.
@@ -140,6 +144,7 @@ perform the replacements.
 
 
 ```r
+filename_prefix <- 'wa_doh_dw_'
 typo_file <- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
                         sep='', collapse='')
 
@@ -246,8 +251,6 @@ both types of output.
 
 
 ```r
-filename_prefix <- 'wa_doh_dw_'
-
 # Zipped CSV for pypMyAdmin
 ex_csv_zip(systems, paste(c(datadir, '/', filename_prefix, 'systems.csv'), 
                           sep='', collapse=''))

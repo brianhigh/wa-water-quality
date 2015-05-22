@@ -1,7 +1,7 @@
 ---
 title: "Washington State Drinking Water Fluoridation"
 author: "Brian High"
-date: "05/18/2015"
+date: "05/21/2015"
 output:
   html_document:
     fig_caption: no
@@ -439,6 +439,7 @@ wa$subregion <- sapply(wa$subregion, function(x) capwords(x))
 wa$county <- wa$subregion
 cnames <- aggregate(cbind(long, lat) ~ subregion, data=wa, 
                     FUN=function(x)mean(range(x)))
+write.csv(cnames, file='data/cnames.csv', row.names=FALSE)
 ```
 
 This allows us to create a base state map with county border in grey that we 

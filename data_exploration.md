@@ -1,6 +1,6 @@
 # Washington State Drinking Water Fluoridation
 Brian High  
-05/18/2015  
+05/21/2015  
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
@@ -550,6 +550,7 @@ wa$subregion <- sapply(wa$subregion, function(x) capwords(x))
 wa$county <- wa$subregion
 cnames <- aggregate(cbind(long, lat) ~ subregion, data=wa, 
                     FUN=function(x)mean(range(x)))
+write.csv(cnames, file='data/cnames.csv', row.names=FALSE)
 ```
 
 This allows us to create a base state map with county border in grey that we 

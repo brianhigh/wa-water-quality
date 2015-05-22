@@ -80,7 +80,7 @@ data.src <- paste0(collapse = ' ', c('Data sources:',
                                      'WA DOH (www.doh.wa.gov),', 
                                      'US EPA (water.epa.gov)',
                                      'and HHS (www.hhs.gov)'))
-gmap <- arrangeGrob(gmap, sub = textGrob(data.src, x=0, hjust=-0.1, vjust=0.1,
+gmap <- arrangeGrob(gmap, sub = textGrob(data.src, x=0, hjust=-.1, vjust=0.1,
                                  gp = gpar(fontface="italic", fontsize=12)))
 gmap
 

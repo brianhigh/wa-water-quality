@@ -10,7 +10,7 @@
 
 <meta name="author" content="Brian High" />
 
-<meta name="date" content="2015-05-18" />
+<meta name="date" content="2015-05-21" />
 
 <title>Washington State Drinking Water Fluoridation</title>
 
@@ -64,7 +64,7 @@ img {
 <div id="header">
 <h1 class="title">Washington State Drinking Water Fluoridation</h1>
 <h4 class="author"><em>Brian High</em></h4>
-<h4 class="date"><em>05/18/2015</em></h4>
+<h4 class="date"><em>05/21/2015</em></h4>
 </div>
 
 
@@ -360,7 +360,8 @@ wa &lt;- subset(county_df, region==&quot;washington&quot;)
 wa$subregion &lt;- sapply(wa$subregion, function(x) capwords(x))
 wa$county &lt;- wa$subregion
 cnames &lt;- aggregate(cbind(long, lat) ~ subregion, data=wa, 
-                    FUN=function(x)mean(range(x)))</code></pre>
+                    FUN=function(x)mean(range(x)))
+write.csv(cnames, file='data/cnames.csv', row.names=FALSE)</code></pre>
 <p>This allows us to create a base state map with county border in grey that we will build upon later. We’ll use the <code>theme_classic()</code> theme.</p>
 <pre class="r"><code># Create the base state map with counties outlined in grey
 wamap &lt;- ggplot(wa, aes(long, lat)) +  
