@@ -297,7 +297,7 @@ ggplot(na.omit(water.src), aes(x=OwnerTypeDesc, stat="identity")) +
 Check the normality of the fluoride and population variables for the "special 
 district" water system with log transformation.
 
-```{r}
+```{r WA-Water-Systems-Special-Districts-QQ-Test, cache=FALSE, fig.cap="Washington State Drinking Water Systems Special Districts Q-Q Plot"}
 # Check normality with a Q-Q plot and a Shapiro-Wilk normality test
 check_normality <- function (var) {
     qqnorm(var)

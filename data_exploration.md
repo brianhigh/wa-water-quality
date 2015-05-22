@@ -422,7 +422,7 @@ check_normality(nat.fl.special$LResPop)
 title(main="Log-Normal Q-Q Plots of Fluoride Level and Population", outer=TRUE)
 ```
 
-![](data_exploration_files/figure-html/unnamed-chunk-11-1.png) 
+![Washington State Drinking Water Systems Special Districts Q-Q Plot](data_exploration_files/figure-html/WA-Water-Systems-Special-Districts-QQ-Test-1.png) 
 
 Both variables (log fluoride concentration and log residential population served) 
 fail the normality tests, since [Shapiro-Wilk](http://www.variation.com/da/help/hs141.htm) 
