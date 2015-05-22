@@ -98,7 +98,7 @@ shapefile <- "USA_adm2"
 shapefile.path <- paste0(c(datadir, "/", shapefile, ".shp"), collapse='')
 if (file.exists(shapefile.zip.path)) {
     if (! file.exists(shapefile.path)) {
-            print("Downloading data file...")
+            print("Unzipping data file...")
             unzip(zipfile=shapefile.zip.path, overwrite=TRUE, exdir=datadir)
     }
 } else {
@@ -125,6 +125,7 @@ These are the names and coordinates for the county name labels.
 cnames.path <- paste0(c(datadir, "/cnames.csv"), collapse='')
 cnames.url <- "https://github.com/brianhigh/wa-water-quality/blob/master/data/cnames.csv"
 if (! file.exists(cnames.path)) {
+    print("Downloading data file...")
     download.file(url=cnames.url, destfile=cnames.path,  mode="wb")
 }
     
@@ -141,6 +142,7 @@ if (file.exists(cnames.path)) {
 dentfile.path <- paste0(c(datadir, "/wa_hca_dental_summary.xls"), collapse='')
 dent.url <- "http://www.hca.wa.gov/medicaid/dentalproviders/documents/999cntysumall.XLS"
 if (! file.exists(dentfile.path)) {
+    print("Downloading data file...")
     download.file(url=dent.url, destfile=dentfile.path,  mode="wb")
 }
 
@@ -148,6 +150,7 @@ if (! file.exists(dentfile.path)) {
     stop(paste("Can't find", dentfile.path, "!", sep=" "))
 }
 
+# Read worksheet from Excel workbook twice - once for each column of interest
 dent.cnty <- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE,
                                    startRow=5, endRow=43, startCol=1, endCol=1)
 dent.exp <- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE,
@@ -170,9 +173,10 @@ theme_bare <- function(...) {
           axis.title.y=element_blank())
 }
 
-# Map Washington State Medicaid dental expenses by county
+# Prepare map data for ggplot
 wa <- fortify(wa, region="NAME_2")
 
+# Map Washington State Medicaid dental expenses by county
 gmap <- ggplot() + geom_map(data=expenses, aes(map_id=county, fill=FY2014),
                     color="darkgreen", map=wa) + 
     expand_limits(x=wa$long, y=wa$lat) + theme_bare() +
@@ -181,10 +185,12 @@ gmap <- ggplot() + geom_map(data=expenses, aes(map_id=county, fill=FY2014),
     scale_fill_gradient2(space="Lab", high="darkgreen", mid="yellow", 
                          low="white", midpoint=300, name="US$")
 
+# Create source attribution string
 data.src <- paste0(collapse = ' ', c('Data sources:', 
-                                     'WA DOH (www.doh.wa.gov),', 
-                                     'US EPA (water.epa.gov)',
-                                     'and HHS (www.hhs.gov)'))
+                                     'WA Health Care Authority (www.hca.wa.gov),', 
+                                     'and GADM (gadm.org)'))
+
+# Layout map with source attribution string at bottom of plot area
 gmap <- arrangeGrob(gmap, sub = textGrob(data.src, x=0, hjust=-.1, vjust=0.1,
                                  gp = gpar(fontface="italic", fontsize=12)))
 gmap
