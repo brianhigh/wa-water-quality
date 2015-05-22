@@ -6,10 +6,10 @@ Brian High
 
 ## Geographical Heatmap
 
-This serves as an example of making a geographical "heatmap". In particular, a 
-US state map with counties colored by the value of a variable. We will use the
-average annual expenses of Medicaid dental care per Medicaid user averaged by 
-county. this project was inspired by a 
+This serves as an example of making a geographical "heatmap" (choropleth). In 
+particular, a US state map with counties colored by the value of a variable. We 
+will use the average annual expenses of Medicaid dental care per Medicaid user 
+averaged by county. this project was inspired by a 
 [related example](https://blogs.baylor.edu/alex_beaujean/2013/06/28/creating-a-map-in-r/).
 
 ## Data Sources
