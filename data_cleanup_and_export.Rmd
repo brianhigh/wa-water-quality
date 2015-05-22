@@ -1,7 +1,7 @@
 ---
 title: "Water Quality Data Cleanup"
 author: "Brian High"
-date: "05/17/2015"
+date: "05/21/2015"
 output: 
     html_document:
         keep_md: yes
@@ -135,6 +135,7 @@ search-replace terms as key-value pairs into a `hash` and loop through them to
 perform the replacements.
 
 ```{r}
+filename_prefix <- 'wa_doh_dw_'
 typo_file <- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
                         sep='', collapse='')
 
@@ -235,8 +236,6 @@ We may use the CSV with phpMyAdmin or the TSV with SQLShare, so we will export
 both types of output.
 
 ```{r}
-filename_prefix <- 'wa_doh_dw_'
-
 # Zipped CSV for pypMyAdmin
 ex_csv_zip(systems, paste(c(datadir, '/', filename_prefix, 'systems.csv'), 
                           sep='', collapse=''))
