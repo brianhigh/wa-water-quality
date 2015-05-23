@@ -5,7 +5,7 @@ date: "05/21/2015"
 output:
   html_document:
     fig_caption: no
-    fig_width: 8
+    fig_width: 7
     keep_md: yes
   pdf_document:
     fig_caption: yes
