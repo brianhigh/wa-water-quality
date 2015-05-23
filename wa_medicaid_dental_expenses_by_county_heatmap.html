@@ -164,7 +164,7 @@ if (file.exists(cnames.path)) {
 </div>
 <div id="get-dental-expenses" class="section level3">
 <h3>Get dental expenses</h3>
-<p>Do file checks as before. Although we read the worksheet twice to make it easier to bring in just the two columns we want, it would be more efficient just to read in the file once and then select the two columns from our data.frame afterward.</p>
+<p>Do file checks as before. Read in the worksheet from the workbook, excluding the header, keeping only two columns (state and per-user annual average expenses), and renaming the columns.</p>
 <pre class="r"><code>dentfile.path &lt;- paste0(c(datadir, &quot;/wa_hca_dental_summary.xls&quot;), collapse='')
 dent.url &lt;- &quot;http://www.hca.wa.gov/medicaid/dentalproviders/documents/999cntysumall.XLS&quot;
 if (! file.exists(dentfile.path)) {
@@ -176,12 +176,10 @@ if (! file.exists(dentfile.path)) {
     stop(paste(&quot;Can't find&quot;, dentfile.path, &quot;!&quot;, sep=&quot; &quot;))
 }
 
-# Read worksheet from Excel workbook twice - once for each column of interest
-dent.cnty &lt;- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE,
-                                   startRow=5, endRow=43, startCol=1, endCol=1)
-dent.exp &lt;- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE,
-                                  startRow=5, endRow=43, startCol=25, endCol=25)
-expenses &lt;- data.frame(county=dent.cnty$Col1, FY2014=dent.exp$Col1, 
+# Read worksheet from Excel workbook, keeping and renaming the columns we want
+dent &lt;- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE, 
+                              startRow=5, endRow=43)
+expenses &lt;- data.frame(county=dent$Col1, FY2014=dent$Col25, 
                        stringsAsFactors = FALSE)</code></pre>
 </div>
 </div>

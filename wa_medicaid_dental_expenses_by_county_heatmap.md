@@ -144,9 +144,9 @@ if (file.exists(cnames.path)) {
 
 ### Get dental expenses
 
-Do file checks as before. Although we read the worksheet twice to make it easier to
-bring in just the two columns we want, it would be more efficient just to read in
-the file once and then select the two columns from our data.frame afterward.
+Do file checks as before. Read in the worksheet from the workbook, excluding 
+the header, keeping only two columns (state and per-user annual average expenses), 
+and renaming the columns.
 
 
 ```r
@@ -161,12 +161,10 @@ if (! file.exists(dentfile.path)) {
     stop(paste("Can't find", dentfile.path, "!", sep=" "))
 }
 
-# Read worksheet from Excel workbook twice - once for each column of interest
-dent.cnty <- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE,
-                                   startRow=5, endRow=43, startCol=1, endCol=1)
-dent.exp <- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE,
-                                  startRow=5, endRow=43, startCol=25, endCol=25)
-expenses <- data.frame(county=dent.cnty$Col1, FY2014=dent.exp$Col1, 
+# Read worksheet from Excel workbook, keeping and renaming the columns we want
+dent <- readWorksheetFromFile(dentfile.path, sheet=1, header=FALSE, 
+                              startRow=5, endRow=43)
+expenses <- data.frame(county=dent$Col1, FY2014=dent$Col25, 
                        stringsAsFactors = FALSE)
 ```
 
