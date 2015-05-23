@@ -148,6 +148,13 @@ filename_prefix <- 'wa_doh_dw_'
 typo_file <- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
                         sep='', collapse='')
 
+if (! file.exists(typo_file)) {
+    repo <- "https://raw.githubusercontent.com/brianhigh/wa-water-quality"
+    csv_path <- "master/data/wa_doh_dw_city_replace.csv"
+    typo_url <- paste(c(repo, csv_path), collapse="/")
+    download.file(url=typo_url, destfile=typo_file)    
+}
+
 if (file.exists(typo_file)) {
     typo_df <- read.csv(typo_file, col.names=c("key", "value"), 
                          header=FALSE, stringsAsFactors=FALSE)

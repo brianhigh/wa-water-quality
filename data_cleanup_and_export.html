@@ -162,6 +162,13 @@ sources &lt;- as.data.frame(sapply(sources, toupper), stringsAsFactors=FALSE)</c
 typo_file &lt;- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
                         sep='', collapse='')
 
+if (! file.exists(typo_file)) {
+    repo &lt;- &quot;https://raw.githubusercontent.com/brianhigh/wa-water-quality&quot;
+    csv_path &lt;- &quot;master/data/wa_doh_dw_city_replace.csv&quot;
+    typo_url &lt;- paste(c(repo, csv_path), collapse=&quot;/&quot;)
+    download.file(url=typo_url, destfile=typo_file)    
+}
+
 if (file.exists(typo_file)) {
     typo_df &lt;- read.csv(typo_file, col.names=c(&quot;key&quot;, &quot;value&quot;), 
                          header=FALSE, stringsAsFactors=FALSE)
