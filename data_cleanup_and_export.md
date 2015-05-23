@@ -409,8 +409,8 @@ locations_file <- paste(c(datadir, '/', filename_prefix, 'locations.tsv'),
 # This is a slow step, so download the file from the repo if you don't have it
 if (! file.exists(locations_file)) {
     repo <- "https://raw.githubusercontent.com/brianhigh/wa-water-quality"
-    csv_path <- "master/data/wa_doh_dw_locations.csv"
-    typo_url <- paste(c(repo, csv_path), collapse="/")
+    tsv_path <- "master/data/wa_doh_dw_locations.tsv"
+    typo_url <- paste(c(repo, tsv_path), collapse="/")
     download.file(url=typo_url, destfile=locations_file, method="curl")    
 }
 

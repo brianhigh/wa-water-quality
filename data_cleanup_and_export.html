@@ -350,8 +350,8 @@ ex_tsv(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.tsv'),
 # This is a slow step, so download the file from the repo if you don't have it
 if (! file.exists(locations_file)) {
     repo &lt;- &quot;https://raw.githubusercontent.com/brianhigh/wa-water-quality&quot;
-    csv_path &lt;- &quot;master/data/wa_doh_dw_locations.csv&quot;
-    typo_url &lt;- paste(c(repo, csv_path), collapse=&quot;/&quot;)
+    tsv_path &lt;- &quot;master/data/wa_doh_dw_locations.tsv&quot;
+    typo_url &lt;- paste(c(repo, tsv_path), collapse=&quot;/&quot;)
     download.file(url=typo_url, destfile=locations_file, method=&quot;curl&quot;)    
 }
 
