@@ -343,8 +343,19 @@ ex_tsv(fluoride, paste(c(datadir, '/', filename_prefix, 'fluoride.tsv'),
 <div id="geocode-water-systems" class="section level2">
 <h2>Geocode Water Systems</h2>
 <p>Get water system location coordinates from Google with <code>geocode</code> from the <a href="http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf">ggmap</a> package. Since Google will not allow a non-commercial user to look up more than 1500 locations a day, we will not include the system address in our search. Instead, we will only search by city, state, and zipcode. Export as TSV and zipped CSV as with other data sources.</p>
-<pre class="r"><code>if (! file.exists(paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
-                        sep='', collapse=''))) {
+<pre class="r"><code>locations_file &lt;- paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
+                        sep='', collapse='')
+
+# This is a slow step, so download the file from the repo if you don't have it
+if (! file.exists(locations_file)) {
+    repo &lt;- &quot;https://raw.githubusercontent.com/brianhigh/wa-water-quality&quot;
+    csv_path &lt;- &quot;master/data/wa_doh_dw_locations.csv&quot;
+    typo_url &lt;- paste(c(repo, csv_path), collapse=&quot;/&quot;)
+    download.file(url=typo_url, destfile=locations_file)    
+}
+
+# Otherwise, you can generate it yourself, taking up to about 1/2 hour
+if (! file.exists(locations_file)) {
     # Get locations from water systems data.frame and format as string
     locations &lt;- filter(systems, WSState==&quot;WA&quot;) %&gt;% 
         select(PWSCity, WSState, WSZipCode) %&gt;% unique() %&gt;% 

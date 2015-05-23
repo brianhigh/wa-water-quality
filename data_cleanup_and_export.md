@@ -402,8 +402,19 @@ zipped CSV as with other data sources.
 
 
 ```r
-if (! file.exists(paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
-                        sep='', collapse=''))) {
+locations_file <- paste(c(datadir, '/', filename_prefix, 'locations.tsv'), 
+                        sep='', collapse='')
+
+# This is a slow step, so download the file from the repo if you don't have it
+if (! file.exists(locations_file)) {
+    repo <- "https://raw.githubusercontent.com/brianhigh/wa-water-quality"
+    csv_path <- "master/data/wa_doh_dw_locations.csv"
+    typo_url <- paste(c(repo, csv_path), collapse="/")
+    download.file(url=typo_url, destfile=locations_file)    
+}
+
+# Otherwise, you can generate it yourself, taking up to about 1/2 hour
+if (! file.exists(locations_file)) {
     # Get locations from water systems data.frame and format as string
     locations <- filter(systems, WSState=="WA") %>% 
         select(PWSCity, WSState, WSZipCode) %>% unique() %>% 
