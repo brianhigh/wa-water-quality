@@ -83,7 +83,7 @@ shapefile.zip.path <- paste0(c(datadir, "/", shapefile.zip), collapse='')
 shapefile.zip.url <- "http://biogeo.ucdavis.edu/data/gadm2/shp/USA_adm.zip"
 if (! file.exists(shapefile.zip.path)) {
             print("Downloading data file...")
-            download.file(url=shapefile.zip.url, destfile=shapefile.zip.path)
+            download.file(url=shapefile.zip.url, destfile=shapefile.zip.path, mode="wb")
 }
 ```
 
@@ -125,7 +125,7 @@ cnames.path <- paste0(c(datadir, "/cnames.csv"), collapse='')
 cnames.url <- "https://github.com/brianhigh/wa-water-quality/blob/master/data/cnames.csv"
 if (! file.exists(cnames.path)) {
     print("Downloading data file...")
-    download.file(url=cnames.url, destfile=cnames.path,  mode="wb", method="curl")
+    download.file(url=cnames.url, destfile=cnames.path, method="curl")
 }
     
 if (file.exists(cnames.path)) {
@@ -143,7 +143,7 @@ dentfile.path <- paste0(c(datadir, "/wa_hca_dental_summary.xls"), collapse='')
 dent.url <- "http://www.hca.wa.gov/medicaid/dentalproviders/documents/999cntysumall.XLS"
 if (! file.exists(dentfile.path)) {
     print("Downloading data file...")
-    download.file(url=dent.url, destfile=dentfile.path,  mode="wb")
+    download.file(url=dent.url, destfile=dentfile.path, mode="wb")
 }
 
 if (! file.exists(dentfile.path)) {

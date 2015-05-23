@@ -117,7 +117,7 @@ shapefile.zip.path &lt;- paste0(c(datadir, &quot;/&quot;, shapefile.zip), collap
 shapefile.zip.url &lt;- &quot;http://biogeo.ucdavis.edu/data/gadm2/shp/USA_adm.zip&quot;
 if (! file.exists(shapefile.zip.path)) {
             print(&quot;Downloading data file...&quot;)
-            download.file(url=shapefile.zip.url, destfile=shapefile.zip.path)
+            download.file(url=shapefile.zip.url, destfile=shapefile.zip.path, mode=&quot;wb&quot;)
 }</code></pre>
 </div>
 <div id="extract-the-shapefile-zip" class="section level3">
@@ -149,7 +149,7 @@ wa &lt;- usa[usa$NAME_1==&quot;Washington&quot;, ]</code></pre>
 cnames.url &lt;- &quot;https://github.com/brianhigh/wa-water-quality/blob/master/data/cnames.csv&quot;
 if (! file.exists(cnames.path)) {
     print(&quot;Downloading data file...&quot;)
-    download.file(url=cnames.url, destfile=cnames.path,  mode=&quot;wb&quot;, method=&quot;curl&quot;)
+    download.file(url=cnames.url, destfile=cnames.path, method=&quot;curl&quot;)
 }
     
 if (file.exists(cnames.path)) {
@@ -164,7 +164,7 @@ if (file.exists(cnames.path)) {
 dent.url &lt;- &quot;http://www.hca.wa.gov/medicaid/dentalproviders/documents/999cntysumall.XLS&quot;
 if (! file.exists(dentfile.path)) {
     print(&quot;Downloading data file...&quot;)
-    download.file(url=dent.url, destfile=dentfile.path,  mode=&quot;wb&quot;)
+    download.file(url=dent.url, destfile=dentfile.path, mode=&quot;wb&quot;)
 }
 
 if (! file.exists(dentfile.path)) {
