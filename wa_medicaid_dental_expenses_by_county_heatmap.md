@@ -7,16 +7,15 @@ Brian High
 ## Geographical Heatmap
 
 This serves as an example of making a geographical "heatmap" (choropleth). In 
-particular, a US state map with counties colored by the value of a variable. We 
-will use the average annual expenses of Medicaid dental care per Medicaid user 
-averaged by county. this project was inspired by a 
+particular, a Washington State map with counties colored by the value of a 
+variable. We will use the average annual expenses of Medicaid dental care per 
+Medicaid user averaged by county. This project was inspired by a 
 [related example](https://blogs.baylor.edu/alex_beaujean/2013/06/28/creating-a-map-in-r/).
 
 ## Data Sources
 
-Medicaid data are from [Washington Health Care Authority](http://www.hca.wa.gov/medicaid/dentalproviders/Pages/dental_data.aspx)
-
-Spatial data are from: [GADM](http://gadm.org/)
+- Medicaid data are from [Washington Health Care Authority](http://www.hca.wa.gov/medicaid/dentalproviders/Pages/dental_data.aspx).
+- Spatial data are from: [GADM](http://gadm.org/).
 
 ## Some Recent Research
 
@@ -76,6 +75,8 @@ dir.create(file.path(datadir), showWarnings=FALSE, recursive=TRUE)
 
 ### Get the shapefile zip
 
+Download the file, unless you already have it (from a previous run).
+
 
 ```r
 shapefile.zip <- "USA_adm.zip"
@@ -88,6 +89,10 @@ if (! file.exists(shapefile.zip.path)) {
 ```
 
 ### Extract the shapefile zip
+
+While we could just use `unzip` to extract, we will also do file existence 
+checks. Only extract it if you have not already done so. Stop if extraction 
+fails.
 
 
 ```r
@@ -117,7 +122,9 @@ wa <- usa[usa$NAME_1=="Washington", ]
 
 ### Get county names and locations
 
-These are the names and coordinates for the county name labels.
+These are the names and coordinates for the county name labels. As before, we
+add some file checks to be smarter about downloading and proceeding with the 
+rest of the program only if the file is present.
 
 
 ```r
@@ -136,6 +143,10 @@ if (file.exists(cnames.path)) {
 ```
 
 ### Get dental expenses
+
+Do file checks as before. Although we read the worksheet twice to make it easier to
+bring in just the two columns we want, it would be more efficient just to read in
+the file once and then select the two columns from our data.frame afterward.
 
 
 ```r
@@ -160,6 +171,8 @@ expenses <- data.frame(county=dent.cnty$Col1, FY2014=dent.exp$Col1,
 ```
 
 ## Create the Map
+
+Fill the counties with Medicaid expenses data and label then county names.
 
 
 ```r
@@ -197,4 +210,4 @@ gmap <- arrangeGrob(gmap, sub = textGrob(data.src, x=0, hjust=-.1, vjust=0.1,
 gmap
 ```
 
-![](wa_medicaid_dental_expenses_by_county_heatmap_files/figure-html/unnamed-chunk-9-1.png) 
+![Washington State Map of 2014 Per-User Medicaid Dental Expenses by County](wa_medicaid_dental_expenses_by_county_heatmap_files/figure-html/unnamed-chunk-9-1.png) 
