@@ -286,7 +286,7 @@ ggplot(na.omit(water.src), aes(x=OwnerTypeDesc, stat="identity")) +
                      "by Water Source Type and System Owner", sep="\n"), 
         x="Water System Owner Type", y="Number of Water Sources") +
         theme_light() + guides(fill = guide_legend(reverse=TRUE)) +
-    theme(axis.text.x = element_text(size=10, angle=45, hjust=1, vjust=1)) +
+    theme(axis.text.x = element_text(size=9, angle=45, hjust=1, vjust=1)) +
     geom_bar(aes(fill=SourceType, position="stack"))
 ```
 
@@ -295,39 +295,30 @@ ggplot(na.omit(water.src), aes(x=OwnerTypeDesc, stat="identity")) +
 #### Test for Normality 
 
 Check the normality of the fluoride and population variables for the "special 
-district" water system with log transformation.
+district" water system with Q-Q plots.
 
 ```{r WA-Water-Systems-Special-Districts-QQ-Test, cache=FALSE, fig.cap="Washington State Drinking Water Systems Special Districts Q-Q Plot"}
-# Check normality with a Q-Q plot and a Shapiro-Wilk normality test
-check_normality <- function (var) {
-    qqnorm(var)
+# Check normality with a Q-Q plot
+check_normality <- function (var, main) {
+    qqnorm(var, main = main)
     qqline(var)
-    shapiro.test(var)
 }
 
-# Run normality checks on log of fluoride concentration and population
+# Make Q-Q plot for fluoride concentration and population
 par(mfrow=c(1,2), mar=c(4,4,3,1), oma=c(0,0,3,0))
-check_normality(nat.fl.special$LmgL)
-check_normality(nat.fl.special$LResPop)
-title(main="Log-Normal Q-Q Plots of Fluoride Level and Population", outer=TRUE)
+check_normality(nat.fl.special$mgL, "Fluoride (mg/L)")
+check_normality(nat.fl.special$ResPop, "Res. Population")
+title(main="Normal Q-Q Plots of Fluoride Level and Residential
+      Population for Special District Water Systems", outer=TRUE)
 ```
-
-Both variables (log fluoride concentration and log residential population served) 
-fail the normality tests, since [Shapiro-Wilk](http://www.variation.com/da/help/hs141.htm) 
-normality tests resulted in small p-values (less than 0.05), rejecting the 
-hypothesis of normality.
 
 #### Significance Test for Linear Regression
 
 Print out the F-statistics of the significance test with the `summary` function.
 
 ```{r}
-summary(lm(LmgL~LResPop+OwnerTypeDesc, data=nat.fl))
+summary(lm(mgL~ResPop+OwnerTypeDesc, data=nat.fl))
 ```
-
-Since the p-value is above 0.05 for all water system types, we cannot reject the 
-null hypothesis that there is no linear relationship between log-fluoride 
-concentration and log-population any of these water system types.
 
 ### Box Plots
 

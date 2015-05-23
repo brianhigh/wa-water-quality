@@ -371,7 +371,7 @@ ggplot(na.omit(water.src), aes(x=OwnerTypeDesc, stat="identity")) +
                      "by Water Source Type and System Owner", sep="\n"), 
         x="Water System Owner Type", y="Number of Water Sources") +
         theme_light() + guides(fill = guide_legend(reverse=TRUE)) +
-    theme(axis.text.x = element_text(size=10, angle=45, hjust=1, vjust=1)) +
+    theme(axis.text.x = element_text(size=9, angle=45, hjust=1, vjust=1)) +
     geom_bar(aes(fill=SourceType, position="stack"))
 ```
 
@@ -382,52 +382,25 @@ ggplot(na.omit(water.src), aes(x=OwnerTypeDesc, stat="identity")) +
 #### Test for Normality 
 
 Check the normality of the fluoride and population variables for the "special 
-district" water system with log transformation.
+district" water system with Q-Q plots.
 
 
 ```r
-# Check normality with a Q-Q plot and a Shapiro-Wilk normality test
-check_normality <- function (var) {
-    qqnorm(var)
+# Check normality with a Q-Q plot
+check_normality <- function (var, main) {
+    qqnorm(var, main = main)
     qqline(var)
-    shapiro.test(var)
 }
 
-# Run normality checks on log of fluoride concentration and population
+# Make Q-Q plot for fluoride concentration and population
 par(mfrow=c(1,2), mar=c(4,4,3,1), oma=c(0,0,3,0))
-check_normality(nat.fl.special$LmgL)
-```
-
-```
-## 
-## 	Shapiro-Wilk normality test
-## 
-## data:  var
-## W = 0.80732, p-value = 0.0001838
-```
-
-```r
-check_normality(nat.fl.special$LResPop)
-```
-
-```
-## 
-## 	Shapiro-Wilk normality test
-## 
-## data:  var
-## W = 0.90453, p-value = 0.01701
-```
-
-```r
-title(main="Log-Normal Q-Q Plots of Fluoride Level and Population", outer=TRUE)
+check_normality(nat.fl.special$mgL, "Fluoride (mg/L)")
+check_normality(nat.fl.special$ResPop, "Res. Population")
+title(main="Normal Q-Q Plots of Fluoride Level and Residential
+      Population for Special District Water Systems", outer=TRUE)
 ```
 
 ![Washington State Drinking Water Systems Special Districts Q-Q Plot](data_exploration_files/figure-html/WA-Water-Systems-Special-Districts-QQ-Test-1.png) 
-
-Both variables (log fluoride concentration and log residential population served) 
-fail the normality tests, since [Shapiro-Wilk](http://www.variation.com/da/help/hs141.htm) 
-normality tests resulted in small p-values (less than 0.05), rejecting the 
-hypothesis of normality.
 
 #### Significance Test for Linear Regression
 
@@ -435,40 +408,36 @@ Print out the F-statistics of the significance test with the `summary` function.
 
 
 ```r
-summary(lm(LmgL~LResPop+OwnerTypeDesc, data=nat.fl))
+summary(lm(mgL~ResPop+OwnerTypeDesc, data=nat.fl))
 ```
 
 ```
 ## 
 ## Call:
-## lm(formula = LmgL ~ LResPop + OwnerTypeDesc, data = nat.fl)
+## lm(formula = mgL ~ ResPop + OwnerTypeDesc, data = nat.fl)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.27222 -0.14688 -0.06224  0.07696  1.01417 
+##     Min      1Q  Median      3Q     Max 
+## -0.9206 -0.4278 -0.2894  0.0380  8.6689 
 ## 
 ## Coefficients:
-##                                 Estimate Std. Error t value Pr(>|t|)  
-## (Intercept)                   -0.0302415  0.0399915  -0.756   0.4501  
-## LResPop                       -0.0031847  0.0169949  -0.187   0.8515  
-## OwnerTypeDescCITY/TOWN        -0.0001291  0.0492157  -0.003   0.9979  
-## OwnerTypeDescCOUNTY            0.1439772  0.1285041   1.120   0.2634  
-## OwnerTypeDescFEDERAL          -0.0737953  0.1299786  -0.568   0.5706  
-## OwnerTypeDescINVESTOR          0.0139625  0.0395117   0.353   0.7240  
-## OwnerTypeDescPRIVATE           0.0184271  0.0357609   0.515   0.6067  
-## OwnerTypeDescSPECIAL DISTRICT  0.0872353  0.0510692   1.708   0.0886 .
-## OwnerTypeDescSTATE             0.0095953  0.1566532   0.061   0.9512  
+##                                 Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)                    1.028e+00  1.237e-01   8.312 3.03e-15 ***
+## ResPop                        -1.250e-06  1.311e-05  -0.095   0.9241    
+## OwnerTypeDescCITY/TOWN        -1.749e-02  1.964e-01  -0.089   0.9291    
+## OwnerTypeDescCOUNTY            4.252e-01  5.835e-01   0.729   0.4667    
+## OwnerTypeDescFEDERAL          -2.378e-01  5.834e-01  -0.408   0.6838    
+## OwnerTypeDescINVESTOR          1.933e-01  1.791e-01   1.079   0.2815    
+## OwnerTypeDescPRIVATE           8.535e-02  1.549e-01   0.551   0.5820    
+## OwnerTypeDescSPECIAL DISTRICT  4.929e-01  2.280e-01   2.162   0.0314 *  
+## OwnerTypeDescSTATE            -3.283e-02  7.092e-01  -0.046   0.9631    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.2173 on 309 degrees of freedom
-## Multiple R-squared:  0.01629,	Adjusted R-squared:  -0.009174 
-## F-statistic: 0.6398 on 8 and 309 DF,  p-value: 0.7441
+## Residual standard error: 0.9876 on 309 degrees of freedom
+## Multiple R-squared:  0.02182,	Adjusted R-squared:  -0.003504 
+## F-statistic: 0.8616 on 8 and 309 DF,  p-value: 0.5493
 ```
-
-Since the p-value is above 0.05 for all water system types, we cannot reject the 
-null hypothesis that there is no linear relationship between log-fluoride 
-concentration and log-population any of these water system types.
 
 ### Box Plots
 
