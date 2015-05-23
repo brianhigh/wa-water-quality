@@ -93,7 +93,7 @@ img {
     stop(&quot;Java not found. Install Java first. https://java.com/en/download/&quot;)
 }</code></pre>
 <p>Load the required R packages.</p>
-<pre class="r"><code>for (pkg in c(&quot;knitr&quot;, &quot;XLConnect&quot;, &quot;rgeos&quot;, &quot;maptools&quot;, &quot;ggplot2&quot;, &quot;scales&quot;, 
+<pre class="r"><code>for (pkg in c(&quot;knitr&quot;, &quot;RCurl&quot;, &quot;XLConnect&quot;, &quot;rgeos&quot;, &quot;maptools&quot;, &quot;ggplot2&quot;, &quot;scales&quot;, 
               &quot;gridExtra&quot;)) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos=&quot;http://cran.fhcrc.org&quot;, dependencies=TRUE)
@@ -149,7 +149,7 @@ wa &lt;- usa[usa$NAME_1==&quot;Washington&quot;, ]</code></pre>
 cnames.url &lt;- &quot;https://github.com/brianhigh/wa-water-quality/blob/master/data/cnames.csv&quot;
 if (! file.exists(cnames.path)) {
     print(&quot;Downloading data file...&quot;)
-    download.file(url=cnames.url, destfile=cnames.path,  mode=&quot;wb&quot;)
+    download.file(url=cnames.url, destfile=cnames.path,  mode=&quot;wb&quot;, method=&quot;curl&quot;)
 }
     
 if (file.exists(cnames.path)) {

@@ -80,7 +80,7 @@ img {
     stop(&quot;Java not found. Install Java first. https://java.com/en/download/&quot;)
 }</code></pre>
 <p>Load the required R packages.</p>
-<pre class="r"><code>for (pkg in c(&quot;knitr&quot;, &quot;hash&quot;, &quot;rJava&quot;, &quot;XLConnect&quot;, &quot;dplyr&quot;, &quot;ggmap&quot;)) {
+<pre class="r"><code>for (pkg in c(&quot;knitr&quot;, &quot;RCurl&quot;, &quot;hash&quot;, &quot;rJava&quot;, &quot;XLConnect&quot;, &quot;dplyr&quot;, &quot;ggmap&quot;)) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos=&quot;http://cran.fhcrc.org&quot;, dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -159,6 +159,7 @@ sources &lt;- as.data.frame(sapply(sources, toupper), stringsAsFactors=FALSE)</c
 <h3>Fix Inconsistent City Names</h3>
 <p>Fix inconsistencies (i.e., typographical errors) in the PWSCity column. As many (over a hundred) were found, we have saved these in a CSV file. We read the search-replace terms as key-value pairs into a <code>hash</code> and loop through them to perform the replacements.</p>
 <pre class="r"><code>filename_prefix &lt;- 'wa_doh_dw_'
+
 typo_file &lt;- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
                         sep='', collapse='')
 
@@ -166,7 +167,7 @@ if (! file.exists(typo_file)) {
     repo &lt;- &quot;https://raw.githubusercontent.com/brianhigh/wa-water-quality&quot;
     csv_path &lt;- &quot;master/data/wa_doh_dw_city_replace.csv&quot;
     typo_url &lt;- paste(c(repo, csv_path), collapse=&quot;/&quot;)
-    download.file(url=typo_url, destfile=typo_file)    
+    download.file(url=typo_url, destfile=typo_file, method=&quot;curl&quot;)    
 }
 
 if (file.exists(typo_file)) {
@@ -351,7 +352,7 @@ if (! file.exists(locations_file)) {
     repo &lt;- &quot;https://raw.githubusercontent.com/brianhigh/wa-water-quality&quot;
     csv_path &lt;- &quot;master/data/wa_doh_dw_locations.csv&quot;
     typo_url &lt;- paste(c(repo, csv_path), collapse=&quot;/&quot;)
-    download.file(url=typo_url, destfile=locations_file)    
+    download.file(url=typo_url, destfile=locations_file, method=&quot;curl&quot;)    
 }
 
 # Otherwise, you can generate it yourself, taking up to about 1/2 hour

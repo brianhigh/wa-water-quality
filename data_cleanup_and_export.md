@@ -24,7 +24,7 @@ Load the required R packages.
 
 
 ```r
-for (pkg in c("knitr", "hash", "rJava", "XLConnect", "dplyr", "ggmap")) {
+for (pkg in c("knitr", "RCurl", "hash", "rJava", "XLConnect", "dplyr", "ggmap")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
         if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
@@ -145,6 +145,7 @@ perform the replacements.
 
 ```r
 filename_prefix <- 'wa_doh_dw_'
+
 typo_file <- paste(c(datadir, '/', filename_prefix, 'city_replace.csv'), 
                         sep='', collapse='')
 
@@ -152,7 +153,7 @@ if (! file.exists(typo_file)) {
     repo <- "https://raw.githubusercontent.com/brianhigh/wa-water-quality"
     csv_path <- "master/data/wa_doh_dw_city_replace.csv"
     typo_url <- paste(c(repo, csv_path), collapse="/")
-    download.file(url=typo_url, destfile=typo_file)    
+    download.file(url=typo_url, destfile=typo_file, method="curl")    
 }
 
 if (file.exists(typo_file)) {
@@ -410,7 +411,7 @@ if (! file.exists(locations_file)) {
     repo <- "https://raw.githubusercontent.com/brianhigh/wa-water-quality"
     csv_path <- "master/data/wa_doh_dw_locations.csv"
     typo_url <- paste(c(repo, csv_path), collapse="/")
-    download.file(url=typo_url, destfile=locations_file)    
+    download.file(url=typo_url, destfile=locations_file, method="curl")    
 }
 
 # Otherwise, you can generate it yourself, taking up to about 1/2 hour

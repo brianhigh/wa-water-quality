@@ -46,7 +46,7 @@ Load the required R packages.
 
 
 ```r
-for (pkg in c("knitr", "XLConnect", "rgeos", "maptools", "ggplot2", "scales", 
+for (pkg in c("knitr", "RCurl", "XLConnect", "rgeos", "maptools", "ggplot2", "scales", 
               "gridExtra")) {
     if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
         install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
@@ -125,7 +125,7 @@ cnames.path <- paste0(c(datadir, "/cnames.csv"), collapse='')
 cnames.url <- "https://github.com/brianhigh/wa-water-quality/blob/master/data/cnames.csv"
 if (! file.exists(cnames.path)) {
     print("Downloading data file...")
-    download.file(url=cnames.url, destfile=cnames.path,  mode="wb")
+    download.file(url=cnames.url, destfile=cnames.path,  mode="wb", method="curl")
 }
     
 if (file.exists(cnames.path)) {
