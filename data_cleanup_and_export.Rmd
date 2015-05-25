@@ -1,7 +1,7 @@
 ---
 title: "Water Quality Data Cleanup"
 author: "Brian High"
-date: "05/21/2015"
+date: "05/24/2015"
 output:
   html_document:
     keep_md: yes
@@ -168,8 +168,8 @@ You can visually inspect the city names and their frequency counts with these
 R commands:
 
 ```{r, eval=FALSE, echo=TRUE}
-by_city <- filter(systems, WSState=="WA") %>% group_by(PWSCity)
-cities_count <- summarize(by_city, count = n())
+cities_count <- filter(systems, WSState=="WA") %>% group_by(PWSCity) %>% 
+    summarize(count = n())
 View(cities_count)
 ```
 

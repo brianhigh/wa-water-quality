@@ -10,7 +10,7 @@
 
 <meta name="author" content="Brian High" />
 
-<meta name="date" content="2015-05-21" />
+<meta name="date" content="2015-05-24" />
 
 <title>Water Quality Data Cleanup</title>
 
@@ -64,7 +64,7 @@ img {
 <div id="header">
 <h1 class="title">Water Quality Data Cleanup</h1>
 <h4 class="author"><em>Brian High</em></h4>
-<h4 class="date"><em>05/21/2015</em></h4>
+<h4 class="date"><em>05/24/2015</em></h4>
 </div>
 
 
@@ -181,8 +181,8 @@ if (file.exists(typo_file)) {
     }
 }</code></pre>
 <p>You can visually inspect the city names and their frequency counts with these R commands:</p>
-<pre class="r"><code>by_city &lt;- filter(systems, WSState==&quot;WA&quot;) %&gt;% group_by(PWSCity)
-cities_count &lt;- summarize(by_city, count = n())
+<pre class="r"><code>cities_count &lt;- filter(systems, WSState==&quot;WA&quot;) %&gt;% group_by(PWSCity) %&gt;% 
+    summarize(count = n())
 View(cities_count)</code></pre>
 </div>
 <div id="remove-thousands-separator" class="section level3">

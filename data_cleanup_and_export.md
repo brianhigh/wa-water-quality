@@ -1,6 +1,6 @@
 # Water Quality Data Cleanup
 Brian High  
-05/21/2015  
+05/24/2015  
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
@@ -173,8 +173,8 @@ R commands:
 
 
 ```r
-by_city <- filter(systems, WSState=="WA") %>% group_by(PWSCity)
-cities_count <- summarize(by_city, count = n())
+cities_count <- filter(systems, WSState=="WA") %>% group_by(PWSCity) %>% 
+    summarize(count = n())
 View(cities_count)
 ```
 
