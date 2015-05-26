@@ -599,7 +599,7 @@ fl$Optimal <- factor(c('No', 'Yes')[fl$Optimal + 1])
 # Subset the columns we want and remove incomplete observations
 fl.opt <- select(fl, County, PWSID, SystemName, ResPop, OwnerTypeDesc, 
                  lon, lat, Treatment, Population, Optimal)
-fl.opt <- fl[complete.cases(fl.opt),]
+fl.opt <- fl.opt[complete.cases(fl.opt),]
 
 # Make the map
 wamap + geom_point(data=fl.opt, inherit.aes=F, 
