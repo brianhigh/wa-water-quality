@@ -24,14 +24,14 @@ Load the required R packages.
 
 
 ```r
-for (pkg in c("knitr", "RCurl", "hash", "rJava", "XLConnect", "dplyr", "ggmap")) {
-    if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
-        install.packages(pkg, repos="http://cran.fhcrc.org", dependencies=TRUE)
-        if (! suppressWarnings(require(pkg, character.only=TRUE)) ) {
-            stop(paste0(c("Can't load package: ", pkg, "!"), collapse = ""))
-        }
-    }
+# Load one or more packages into memory, installing as needed.
+load.pkgs <- function(pkgs, repos = "http://cran.r-project.org") {
+    result <- sapply(pkgs, function(pkg) { 
+        if (!suppressWarnings(require(pkg, character.only = TRUE))) {
+            install.packages(pkg, quiet = TRUE, repos = repos)
+            library(pkg, character.only = TRUE)}})
 }
+load.pkgs(c("knitr", "RCurl", "hash", "rJava", "XLConnect", "dplyr", "ggmap"))
 ```
 
 Configure `knitr` options.
